@@ -1,4 +1,4 @@
-import { format, formatDistanceToNow, isToday, isTomorrow, isYesterday, differenceInDays, parseISO, startOfDay, endOfDay } from 'date-fns';
+import { format, isToday, isTomorrow, isYesterday, startOfDay, endOfDay, parseISO, differenceInDays } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
 
 const TIMEZONE = 'America/Sao_Paulo';
@@ -44,15 +44,12 @@ export function formatTime(time: string): string {
 /**
  * Get relative day label (Hoje, Amanhã, etc.)
  */
-export function getRelativeDayLabel(date: string | Date, lang: Lang = 'pt'): string {
-  const d = typeof date === 'string' ? parseISO(date) : date;
-  const today = getTodayLocal();
+export function getRelativeDateLabel(date: Date): string {
+  if (isToday(date)) return 'Hoje';
+  if (isTomorrow(date)) return 'Amanhã';
+  if (isYesterday(date)) return 'Ontem';
 
-  if (isToday(d)) return lang === 'pt' ? 'Hoje' : 'Today';
-  if (isTomorrow(d)) return lang === 'pt' ? 'Amanhã' : 'Tomorrow';
-  if (isYesterday(d)) return lang === 'pt' ? 'Ontem' : 'Yesterday';
-
-  return formatDate(d, lang);
+  return formatDate(date, 'pt');
 }
 
 /**

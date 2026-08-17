@@ -1,13 +1,12 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'motion/react';
-import { Check, MoreHorizontal, ArrowRight } from 'lucide-react';
+import { Check } from 'lucide-react';
 import type { Category } from '../../lib/constants';
 
 interface TaskItem {
   id: string;
   title_pt: string;
-  title_en: string;
+  title_en: string | null;
   completed: boolean;
   priority: 'low' | 'normal' | 'high';
 }

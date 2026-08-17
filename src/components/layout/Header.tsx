@@ -10,7 +10,6 @@ export default function Header() {
     setLanguage,
     resolvedTheme,
     setTheme,
-    theme,
     toggleSidebar,
     isOnline,
   } = useAppStore();
