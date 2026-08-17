@@ -1,0 +1,84 @@
+{
+  "app": {
+    "name": "Dayali",
+    "tagline": "Seu painel pessoal"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "tasks": "Tarefas",
+    "agenda": "Agenda",
+    "college": "Faculdade",
+    "church": "Igreja",
+    "history": "Histórico",
+    "settings": "Configurações"
+  },
+  "header": {
+    "greeting_morning": "Bom dia",
+    "greeting_afternoon": "Boa tarde",
+    "greeting_evening": "Boa noite",
+    "search": "Buscar...",
+    "new_task": "Nova tarefa",
+    "new_event": "Novo evento",
+    "sync": "Sincronizar",
+    "offline": "Sem conexão"
+  },
+  "actions": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "close": "Fechar",
+    "add": "Adicionar",
+    "create": "Criar",
+    "confirm": "Confirmar",
+    "back": "Voltar",
+    "next": "Próximo",
+    "loading": "Carregando...",
+    "retry": "Tentar novamente"
+  },
+  "empty": {
+    "title": "Nada por aqui",
+    "tasks": "Nenhuma tarefa para hoje",
+    "agenda": "Nenhum compromisso",
+    "college": "Nenhuma atividade acadêmica",
+    "church": "Nenhum evento da igreja"
+  },
+  "status": {
+    "pending": "Pendente",
+    "completed": "Concluída",
+    "postponed": "Adiada",
+    "cancelled": "Cancelada",
+    "in_progress": "Em andamento",
+    "upcoming": "Próxima",
+    "studying": "Estudando",
+    "graded": "Corrigida",
+    "submitted": "Entregue"
+  },
+  "priority": {
+    "low": "Baixa",
+    "normal": "Normal",
+    "high": "Alta"
+  },
+  "category": {
+    "personal": "Pessoal",
+    "work": "Trabalho",
+    "college": "Faculdade"
+  },
+  "time": {
+    "today": "Hoje",
+    "tomorrow": "Amanhã",
+    "yesterday": "Ontem",
+    "days_left": "{{count}} dia restante",
+    "days_left_plural": "{{count}} dias restantes",
+    "overdue": "Atrasado",
+    "this_week": "Esta semana",
+    "next_week": "Próxima semana"
+  },
+  "errors": {
+    "generic": "Algo deu errado. Tente novamente.",
+    "network": "Erro de conexão. Verifique sua internet.",
+    "auth": "Sessão expirada. Faça login novamente.",
+    "required": "Campo obrigatório",
+    "invalid_date": "Data inválida"
+  }
+}

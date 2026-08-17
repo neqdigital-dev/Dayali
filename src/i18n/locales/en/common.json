@@ -1,0 +1,84 @@
+{
+  "app": {
+    "name": "Dayali",
+    "tagline": "Your personal dashboard"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "tasks": "Tasks",
+    "agenda": "Agenda",
+    "college": "College",
+    "church": "Church",
+    "history": "History",
+    "settings": "Settings"
+  },
+  "header": {
+    "greeting_morning": "Good morning",
+    "greeting_afternoon": "Good afternoon",
+    "greeting_evening": "Good evening",
+    "search": "Search...",
+    "new_task": "New task",
+    "new_event": "New event",
+    "sync": "Sync",
+    "offline": "Offline"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "add": "Add",
+    "create": "Create",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "loading": "Loading...",
+    "retry": "Retry"
+  },
+  "empty": {
+    "title": "Nothing here",
+    "tasks": "No tasks for today",
+    "agenda": "No appointments",
+    "college": "No academic activities",
+    "church": "No church events"
+  },
+  "status": {
+    "pending": "Pending",
+    "completed": "Completed",
+    "postponed": "Postponed",
+    "cancelled": "Cancelled",
+    "in_progress": "In progress",
+    "upcoming": "Upcoming",
+    "studying": "Studying",
+    "graded": "Graded",
+    "submitted": "Submitted"
+  },
+  "priority": {
+    "low": "Low",
+    "normal": "Normal",
+    "high": "High"
+  },
+  "category": {
+    "personal": "Personal",
+    "work": "Work",
+    "college": "College"
+  },
+  "time": {
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "yesterday": "Yesterday",
+    "days_left": "{{count}} day left",
+    "days_left_plural": "{{count}} days left",
+    "overdue": "Overdue",
+    "this_week": "This week",
+    "next_week": "Next week"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Connection error. Check your internet.",
+    "auth": "Session expired. Please log in again.",
+    "required": "Required field",
+    "invalid_date": "Invalid date"
+  }
+}

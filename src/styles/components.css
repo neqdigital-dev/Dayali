@@ -1,0 +1,309 @@
+/* ============================================================
+   COMPONENT-SPECIFIC STYLES
+   Styles for layout and dashboard components
+   ============================================================ */
+
+/* === Sidebar === */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-surface-overlay);
+  z-index: calc(var(--z-sticky) - 1);
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .sidebar-overlay {
+    display: block;
+  }
+}
+
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border-color);
+  height: var(--header-height);
+}
+
+.sidebar-logo-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--weight-bold);
+  font-size: var(--text-lg);
+  flex-shrink: 0;
+}
+
+.sidebar-logo-text {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text);
+}
+
+.sidebar-close-btn {
+  margin-left: auto;
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .sidebar-close-btn {
+    display: flex;
+  }
+}
+
+.sidebar-footer {
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--border-color);
+}
+
+.sidebar-version {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+
+/* === Header === */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.header-menu-btn {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .header-menu-btn {
+    display: flex;
+  }
+}
+
+.header-greeting {
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.header-new-btn {
+  border-radius: var(--radius-full);
+}
+
+.header-new-label {
+  font-size: var(--text-sm);
+}
+
+@media (max-width: 640px) {
+  .header-new-label {
+    display: none;
+  }
+
+  .header-greeting {
+    font-size: var(--text-md);
+  }
+}
+
+.header-lang-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.header-lang-flag {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.header-lang-code {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.04em;
+}
+
+/* === Spiritual Card extras === */
+.spiritual-label {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-4);
+}
+
+/* === Task Column === */
+.task-column-header {
+  margin-bottom: var(--space-4);
+}
+
+.task-column-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.task-column-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.task-column-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.task-column-empty {
+  text-align: center;
+  padding: var(--space-6) var(--space-4);
+}
+
+/* === College Card === */
+.college-sections {
+  display: flex;
+  flex-direction: column;
+}
+
+.college-section {
+  padding: var(--space-1) 0;
+}
+
+.college-section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.college-section-icon {
+  color: var(--color-college);
+  flex-shrink: 0;
+}
+
+.college-section-label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.college-section-content {
+  padding-left: var(--space-5);
+}
+
+.college-subject {
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  color: var(--color-text);
+  margin-bottom: var(--space-1);
+}
+
+.college-date-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.college-date {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.college-study-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-left: var(--space-5);
+}
+
+/* === Progress Card === */
+.progress-card {
+  padding: var(--space-5) var(--space-6);
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+.progress-title {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+.progress-percentage {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-tight);
+}
+
+.progress-detail {
+  margin-top: var(--space-2);
+}
+
+/* === Agenda Card === */
+.agenda-card {
+  padding: var(--space-5) var(--space-6);
+}
+
+.agenda-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.agenda-card-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.agenda-card-title {
+  font-size: var(--text-md);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+}
+
+.agenda-card-body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* === Water Complete State === */
+.water-tracker.water-complete {
+  border-color: hsla(152, 55%, 46%, 0.25);
+  background: var(--color-success-bg);
+}
+
+.water-tracker.water-complete .water-icon {
+  color: var(--color-success);
+}
+
+.water-tracker.water-complete .water-cup.filled {
+  background: var(--color-success);
+  border-color: var(--color-success);
+}

@@ -1,0 +1,29 @@
+{
+  "spiritual": {
+    "title": "Today's Message",
+    "source_label": "Source"
+  },
+  "water": {
+    "title": "Water",
+    "cups": "cups",
+    "goal_reached": "Goal reached! 🎉",
+    "add_cup": "Add cup"
+  },
+  "progress": {
+    "title": "Today's Progress",
+    "completed": "completed",
+    "tasks_done": "{{done}} of {{total}} tasks"
+  },
+  "agenda_preview": {
+    "title": "Agenda",
+    "no_events": "No appointments",
+    "view_all": "View full agenda"
+  },
+  "college_preview": {
+    "next_exam": "Next exam",
+    "next_assignment": "Next assignment",
+    "today_studies": "Today's studies",
+    "no_exams": "No upcoming exams",
+    "no_assignments": "No upcoming assignments"
+  }
+}
