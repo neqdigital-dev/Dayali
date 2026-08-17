@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { motion } from 'motion/react';
-import { Check } from 'lucide-react';
+import { Check, Plus, MoreHorizontal, ArrowUp, ArrowDown } from 'lucide-react';
 import type { Category } from '../../lib/constants';
 
 interface TaskItem {
@@ -37,9 +37,12 @@ export default function TaskColumn({ category, tasks, onToggleTask }: TaskColumn
           <span className={`badge badge-${config.iconBg}`}>
             {t(config.label)}
           </span>
-          <span className="task-column-count text-sm text-tertiary">
+          <span className="task-column-count text-sm text-tertiary" style={{ marginLeft: 'auto', marginRight: 'var(--space-2)' }}>
             {completedCount}/{tasks.length}
           </span>
+          <button className="btn-icon" title={t('actions.add')} style={{ width: 24, height: 24, background: 'var(--color-bg-subtle)' }}>
+            <Plus size={14} />
+          </button>
         </div>
       </div>
 
@@ -74,7 +77,7 @@ export default function TaskColumn({ category, tasks, onToggleTask }: TaskColumn
                 )}
               </motion.div>
 
-              <div className="task-content">
+              <div className="task-content" style={{ flex: 1 }}>
                 <span className="task-title">
                   {lang === 'en' && task.title_en ? task.title_en : task.title_pt}
                 </span>
@@ -83,6 +86,18 @@ export default function TaskColumn({ category, tasks, onToggleTask }: TaskColumn
                     {t('priority.high')}
                   </span>
                 )}
+              </div>
+
+              <div className="task-actions" style={{ display: 'flex', gap: '2px', opacity: 0.5 }}>
+                <button className="btn-icon" style={{ width: 20, height: 20 }}>
+                  <ArrowUp size={12} />
+                </button>
+                <button className="btn-icon" style={{ width: 20, height: 20 }}>
+                  <ArrowDown size={12} />
+                </button>
+                <button className="btn-icon" style={{ width: 20, height: 20 }}>
+                  <MoreHorizontal size={12} />
+                </button>
               </div>
             </motion.div>
           ))

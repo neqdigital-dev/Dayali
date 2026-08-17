@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuthStore } from '../stores/useAuthStore';
+import { useTasks, useAddTask, useUpdateTask } from '../hooks/useTasks';
+import type { TaskItem } from '../components/dashboard/TaskColumn';
 import SpiritualCard from '../components/dashboard/SpiritualCard';
 import WaterTracker from '../components/dashboard/WaterTracker';
 import TaskColumn from '../components/dashboard/TaskColumn';
@@ -15,38 +18,53 @@ interface TaskItem {
   priority: Priority;
 }
 
-const initialPersonalTasks: TaskItem[] = [
-  { id: 'p1', title_pt: 'Treinar', title_en: 'Work out', completed: true, priority: 'normal' },
-  { id: 'p2', title_pt: 'Estudar inglês', title_en: 'Study English', completed: true, priority: 'normal' },
-  { id: 'p3', title_pt: 'Ler Bíblia', title_en: 'Read Bible', completed: false, priority: 'high' },
-  { id: 'p4', title_pt: 'Exercícios de respiração', title_en: 'Breathing exercises', completed: false, priority: 'low' },
-];
-
-const initialWorkTasks: TaskItem[] = [
-  { id: 'w1', title_pt: 'Criar post', title_en: 'Create post', completed: true, priority: 'high' },
-  { id: 'w2', title_pt: 'Gravar vídeo', title_en: 'Record video', completed: false, priority: 'high' },
-  { id: 'w3', title_pt: 'Editar thumbnail', title_en: 'Edit thumbnail', completed: false, priority: 'normal' },
-  { id: 'w4', title_pt: 'Responder mensagens', title_en: 'Reply to messages', completed: true, priority: 'normal' },
-  { id: 'w5', title_pt: 'Publicar conteúdo', title_en: 'Publish content', completed: false, priority: 'normal' },
+const initialPersonalTasks: Partial<TaskItem>[] = [
+  { title_pt: 'Tomar café da manhã', title_en: 'Eat breakfast', priority: 'normal' },
+  { title_pt: 'Fazer almoço', title_en: 'Make lunch', priority: 'normal' },
+  { title_pt: 'Treinar 💪', title_en: 'To train 💪', priority: 'high' },
+  { title_pt: 'Ler a Bíblia', title_en: 'Read the bible', priority: 'high' },
+  { title_pt: 'Estudar lição', title_en: 'Study lesson', priority: 'normal' },
+  { title_pt: 'Ler livro', title_en: 'Read book', priority: 'normal' },
+  { title_pt: 'Dormir às 21h 😴', title_en: 'Sleep at 21h 😴', priority: 'high' },
+  { title_pt: 'Tirar um cochilo 😴', title_en: 'Take a nap 😴', priority: 'low' },
+  { title_pt: 'Falar com Deus 🙏', title_en: 'Speak with God 🙏', priority: 'high' },
+  { title_pt: 'Parar de trabalhar 18h 🛑', title_en: 'Stop working 18h 🛑', priority: 'high' },
+  { title_pt: 'Alongamento 🤸', title_en: 'Stretching 🤸', priority: 'low' },
 ];
 
 export default function Dashboard() {
-  const [personalTasks, setPersonalTasks] = useState<TaskItem[]>(initialPersonalTasks);
-  const [workTasks, setWorkTasks] = useState<TaskItem[]>(initialWorkTasks);
+  const { user } = useAuthStore();
+  const { data: tasks, isLoading } = useTasks();
+  const addTask = useAddTask();
+  const updateTask = useUpdateTask();
 
-  const toggleTask = (
-    tasks: TaskItem[],
-    setTasks: React.Dispatch<React.SetStateAction<TaskItem[]>>,
-    id: string
-  ) => {
-    setTasks(
-      tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
-    );
+  const personalTasks = tasks?.filter(t => t.category === 'personal') || [];
+  const workTasks = tasks?.filter(t => t.category === 'work') || [];
+
+  // Seed inicial se o banco estiver vazio
+  useEffect(() => {
+    if (tasks?.length === 0 && user && !addTask.isPending) {
+      initialPersonalTasks.forEach(t => {
+        addTask.mutate({
+          user_id: user.id,
+          title_pt: t.title_pt!,
+          category: 'personal',
+          type: 'daily',
+          priority: t.priority
+        });
+      });
+    }
+  }, [tasks, user]);
+
+  const toggleTask = (id: string, currentCompleted: boolean) => {
+    updateTask.mutate({ id, updates: { is_active: !currentCompleted } }); 
   };
 
   // Calculate overall progress
   const allTasks = [...personalTasks, ...workTasks];
-  const completedCount = allTasks.filter((t) => t.completed).length;
+  const completedCount = allTasks.filter((t) => (t as any).completed).length; // Provisório até conectarmos ocorrências
+
+  if (isLoading) return <div style={{ padding: 'var(--space-6)', textAlign: 'center' }}>Carregando dados...</div>;
 
   return (
     <div className="dashboard-grid">
@@ -64,13 +82,13 @@ export default function Dashboard() {
       <div className="dashboard-columns">
         <TaskColumn
           category="personal"
-          tasks={personalTasks}
-          onToggleTask={(id) => toggleTask(personalTasks, setPersonalTasks, id)}
+          tasks={personalTasks as any}
+          onToggleTask={(id) => toggleTask(id, false)}
         />
         <TaskColumn
           category="work"
-          tasks={workTasks}
-          onToggleTask={(id) => toggleTask(workTasks, setWorkTasks, id)}
+          tasks={workTasks as any}
+          onToggleTask={(id) => toggleTask(id, false)}
         />
         <CollegeCard />
       </div>

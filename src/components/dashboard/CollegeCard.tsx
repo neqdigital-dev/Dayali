@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { GraduationCap, BookOpen, FileText } from 'lucide-react';
+import { GraduationCap, BookOpen, FileText, Plus } from 'lucide-react';
 import { getDaysUntilLabel } from '../../lib/dates';
 
 // Demo data
@@ -33,6 +33,9 @@ export default function CollegeCard() {
           <span className="badge badge-college">
             {useTranslation().t('category.college')}
           </span>
+          <button className="btn-icon" title={t('actions.add')} style={{ width: 24, height: 24, background: 'var(--color-bg-subtle)', marginLeft: 'auto' }}>
+            <Plus size={14} />
+          </button>
         </div>
       </div>
 
