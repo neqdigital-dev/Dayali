@@ -1,3 +1,5 @@
+import ChurchCard from '../components/dashboard/ChurchCard';
+
 export default function Church() {
   return (
     <div className="page-container">
@@ -6,7 +8,9 @@ export default function Church() {
         <p className="page-description">Pregações, participações e informativos.</p>
       </header>
       <div className="page-content">
-        <p style={{ color: 'var(--color-text-secondary)' }}>Eventos e escalas da igreja serão exibidos aqui.</p>
+        <div style={{ maxWidth: 800 }}>
+          <ChurchCard />
+        </div>
       </div>
     </div>
   );

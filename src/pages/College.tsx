@@ -1,3 +1,5 @@
+import CollegeCard from '../components/dashboard/CollegeCard';
+
 export default function College() {
   return (
     <div className="page-container">
@@ -6,8 +8,8 @@ export default function College() {
         <p className="page-description">Provas, trabalhos e cronograma de estudos.</p>
       </header>
       <div className="page-content">
-        <div className="dashboard-grid">
-          {/* Futuras abas de Faculdade irão aqui */}
+        <div style={{ maxWidth: 800 }}>
+          <CollegeCard />
         </div>
       </div>
     </div>

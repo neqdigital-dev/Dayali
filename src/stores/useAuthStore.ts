@@ -18,6 +18,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   setUser: (user) => set({ user }),
   initialize: async () => {
     try {
+      if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+        console.warn('Mocking user since Supabase is not configured');
+        set({ user: { id: 'mock-user-id', email: 'user@example.com' } as User, loading: false, initialized: true });
+        return;
+      }
       const { data: { session } } = await supabase.auth.getSession();
       set({ user: session?.user ?? null, loading: false, initialized: true });
 
@@ -32,6 +37,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
   signOut: async () => {
     set({ loading: true });
+    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+        set({ user: null, loading: false });
+        return;
+    }
     await supabase.auth.signOut();
     set({ user: null, loading: false });
   },

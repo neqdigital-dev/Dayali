@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BookOpen, Plus, Trash2, GripVertical, GraduationCap } from 'lucide-react';
+import { Plus, Trash2, Heart, GripVertical, Church } from 'lucide-react';
 import { getDaysUntilLabel } from '../../lib/dates';
 import { useDataStore } from '../../stores/useDataStore';
 
-export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any }) {
+export default function ChurchCard({ dragHandleProps }: { dragHandleProps?: any }) {
   const { t, i18n } = useTranslation(['dashboard', 'common']);
   const lang = i18n.language as 'pt' | 'en';
   
   const { agendaEvents, addAgendaEvent, addSubtopic, toggleSubtopic, deleteSubtopic, deleteAgendaEvent } = useDataStore();
   
-  const collegeEvents = agendaEvents.filter(e => e.category === 'college');
+  const churchEvents = agendaEvents.filter(e => e.category === 'church');
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [newEventTitle, setNewEventTitle] = useState('');
   const [newEventDate, setNewEventDate] = useState('');
@@ -20,7 +20,7 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
 
   const handleAddEvent = () => {
     if (newEventTitle.trim() && newEventDate) {
-      addAgendaEvent({ title: newEventTitle.trim(), date: newEventDate, category: 'college', subtopics: [] });
+      addAgendaEvent({ title: newEventTitle.trim(), date: newEventDate, category: 'church', subtopics: [] });
       setNewEventTitle('');
       setNewEventDate('');
       setIsAddingEvent(false);
@@ -35,13 +35,13 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
     }
   };
 
-  const completedCount = collegeEvents.reduce((acc, ev) => acc + (ev.subtopics?.filter(s => s.completed).length || 0), 0);
-  const totalCount = collegeEvents.reduce((acc, ev) => acc + (ev.subtopics?.length || 0), 0);
+  const completedCount = churchEvents.reduce((acc, ev) => acc + (ev.subtopics?.filter(s => s.completed).length || 0), 0);
+  const totalCount = churchEvents.reduce((acc, ev) => acc + (ev.subtopics?.length || 0), 0);
   const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
   return (
-    <div className="card card-category college">
-      <div className="task-column-header">
+    <div className="card task-column task-column-church">
+      <div className="card-header">
         <div style={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 'var(--space-2)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -50,7 +50,9 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
                   <GripVertical size={16} />
                 </div>
               )}
-              <span className="badge badge-college">{t('category.college', { ns: 'common' })}</span>
+              <span className="badge badge-church" style={{ gap: '4px' }}>
+                <Church size={14} /> Igreja / Deus
+              </span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
               <span className="task-column-count text-sm text-tertiary">{completedCount}/{totalCount}</span>
@@ -60,7 +62,7 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
             </div>
           </div>
           <div style={{ height: 4, background: 'var(--color-bg-subtle)', borderRadius: 2, width: '100%', overflow: 'hidden' }}>
-            <div style={{ height: '100%', background: 'var(--color-college)', width: `${progress}%`, transition: 'width 0.3s ease' }} />
+            <div style={{ height: '100%', background: 'var(--color-preaching)', width: `${progress}%`, transition: 'width 0.3s ease' }} />
           </div>
         </div>
       </div>
@@ -73,7 +75,7 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
               autoFocus
               value={newEventTitle}
               onChange={(e) => setNewEventTitle(e.target.value)}
-              placeholder="Ex: Prova de Lógica"
+              placeholder="Ex: Pregação Vila Tera"
               style={{ width: '100%', marginBottom: '4px', fontSize: 'var(--text-sm)', padding: '4px', background: 'transparent', border: '1px solid var(--color-border)', borderRadius: '4px', color: 'var(--color-text-primary)' }}
             />
             <div style={{ display: 'flex', gap: '8px' }}>
@@ -89,18 +91,17 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
           </div>
         )}
 
-        {collegeEvents.length === 0 && !isAddingEvent && (
-          <p className="text-sm text-tertiary" style={{ padding: 'var(--space-2)' }}>Nenhuma avaliação ou trabalho pendente.</p>
+        {churchEvents.length === 0 && !isAddingEvent && (
+          <p className="text-sm text-tertiary" style={{ padding: 'var(--space-2)' }}>Nenhum compromisso ou evento pendente.</p>
         )}
 
-        {collegeEvents.map(event => (
+        {churchEvents.map(event => (
           <div key={event.id} style={{ marginBottom: 'var(--space-4)' }}>
-            {/* Event Header styling like a Task */}
             <div className="task-item" style={{ background: 'var(--color-bg-subtle)' }}>
               <div className="task-content" style={{ flex: 1 }}>
                 <span className="task-title">{event.title}</span>
                 <div style={{ display: 'flex', gap: '4px', marginTop: '2px', alignItems: 'center' }}>
-                  <BookOpen size={10} style={{ color: 'var(--color-text-tertiary)' }} />
+                  <Heart size={10} style={{ color: 'var(--color-text-tertiary)' }} />
                   <span className="badge" style={{ background: 'var(--color-bg-base)', fontSize: '9px' }}>{event.date.split('-').reverse().join('/')}</span>
                   <span className="badge badge-warning" style={{ fontSize: '9px' }}>{getDaysUntilLabel(event.date, lang)}</span>
                 </div>

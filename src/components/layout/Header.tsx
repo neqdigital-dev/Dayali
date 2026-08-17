@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Menu, Plus, Sun, Moon, WifiOff } from 'lucide-react';
 import { useAppStore } from '../../stores/useAppStore';
 import { getGreetingKey } from '../../lib/dates';
+import { useDataStore } from '../../stores/useDataStore';
 
 export default function Header() {
   const { t, i18n } = useTranslation();
@@ -23,6 +24,19 @@ export default function Header() {
   const handleThemeToggle = () => {
     const next = resolvedTheme === 'light' ? 'dark' : 'light';
     setTheme(next);
+  };
+
+  const { addMasterTask } = useDataStore();
+
+  const handleQuickAdd = () => {
+    const title = window.prompt(t('header.new_task') + ':');
+    if (title && title.trim()) {
+      const dayIndex = new Date().getDay();
+      let todayType: 'weekday' | 'saturday' | 'sunday' = 'weekday';
+      if (dayIndex === 0) todayType = 'sunday';
+      if (dayIndex === 6) todayType = 'saturday';
+      addMasterTask({ title: title.trim(), category: 'personal', repeatType: todayType });
+    }
   };
 
   return (
@@ -49,7 +63,7 @@ export default function Header() {
 
         <div className="header-right">
           {/* New task quick action */}
-          <button className="btn btn-primary btn-sm header-new-btn">
+          <button className="btn btn-primary btn-sm header-new-btn" onClick={handleQuickAdd}>
             <Plus size={16} />
             <span className="header-new-label">{t('header.new_task')}</span>
           </button>
