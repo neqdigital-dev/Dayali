@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BookOpen, Plus, Trash2, GripVertical, GraduationCap } from 'lucide-react';
+import { BookOpen, Plus, Trash2, GripVertical } from 'lucide-react';
 import { getDaysUntilLabel } from '../../lib/dates';
 import { useDataStore } from '../../stores/useDataStore';
 

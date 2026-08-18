@@ -46,7 +46,7 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
   const handleDayAddSubmit = (dayNum: number) => {
     if (newEventTitle.trim()) {
       const dateStr = new Date(year, month, dayNum, 12).toISOString().split('T')[0];
-      addAgendaEvent({ title: newEventTitle.trim(), category: newEventCategory, date: dateStr, subtopics: [] });
+      addAgendaEvent({ title_pt: newEventTitle.trim(), category: newEventCategory, date: dateStr, subtopics: [] });
       setNewEventTitle('');
       setAddingEventToDay(null);
     }
@@ -155,7 +155,7 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
               </div>
 
               <div style={{ marginTop: 'var(--space-2)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                {events.map((ev, i) => (
+                {events.map((ev: any, i: number) => (
                   <div key={i} style={{
                     fontSize: '0.65rem',
                     padding: '2px 4px',
@@ -248,7 +248,7 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
                 </div>
 
                 <div style={{ marginTop: 'var(--space-2)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                  {events.map((ev, i) => (
+                  {events.map((ev: any, i: number) => (
                     <div key={i} style={{
                       fontSize: '0.65rem',
                       padding: '2px 4px',

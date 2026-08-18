@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware';
 export interface MasterTask {
   id: string;
   title_pt: string;
-  title_en?: string;
+  title_en?: string | null;
   category: 'personal' | 'work' | 'college' | 'church';
   repeatType: 'weekday' | 'saturday' | 'sunday';
   completed: boolean;
@@ -16,10 +16,10 @@ export interface MasterTask {
 export interface AgendaEvent {
   id: string;
   title_pt: string;
-  title_en?: string;
+  title_en?: string | null;
   date: string; // YYYY-MM-DD
   category: string;
-  subtopics?: { id: string; title_pt: string; title_en?: string; completed: boolean }[];
+  subtopics?: { id: string; title_pt: string; title_en?: string | null; completed: boolean }[];
 }
 
 interface DataState {

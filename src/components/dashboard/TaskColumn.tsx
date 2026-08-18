@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'motion/react';
-import { MoreHorizontal, Plus, GripVertical, Check, Trash2 } from 'lucide-react';
+import { Plus, GripVertical, Check, Trash2 } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -10,7 +10,7 @@ import type { Category } from '../../lib/constants';
 interface TaskItem {
   id: string;
   title_pt: string;
-  title_en: string | null;
+  title_en?: string | null;
   completed: boolean;
   priority: 'low' | 'normal' | 'high';
   time?: string;
@@ -37,7 +37,7 @@ const categoryConfig: Record<Category, { iconBg: string; label: string }> = {
 };
 
 function SortableTask({ task, onToggleTask, onDeleteTask, onUpdateTask }: { task: TaskItem; onToggleTask?: (id: string, c: boolean) => void; onDeleteTask?: (id: string) => void; onUpdateTask?: (id: string, u: Partial<TaskItem>) => void }) {
-  const { t, i18n } = useTranslation(['dashboard', 'common']);
+  const { i18n } = useTranslation(['dashboard', 'common']);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id });
   const [isEditing, setIsEditing] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);

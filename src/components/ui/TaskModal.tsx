@@ -10,7 +10,7 @@ interface TaskModalProps {
 }
 
 export default function TaskModal({ isOpen, onClose, onSave, defaultCategory = 'personal' }: TaskModalProps) {
-  const { t } = useTranslation('dashboard');
+
   const [title, setTitle] = useState('');
   const [priority, setPriority] = useState<'low' | 'normal' | 'high'>('normal');
   const [category, setCategory] = useState(defaultCategory);

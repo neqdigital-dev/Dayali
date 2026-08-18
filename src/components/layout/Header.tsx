@@ -35,7 +35,7 @@ export default function Header() {
       let todayType: 'weekday' | 'saturday' | 'sunday' = 'weekday';
       if (dayIndex === 0) todayType = 'sunday';
       if (dayIndex === 6) todayType = 'saturday';
-      addMasterTask({ title: title.trim(), category: 'personal', repeatType: todayType });
+      addMasterTask({ title_pt: title.trim(), category: 'personal', repeatType: todayType });
     }
   };
 
