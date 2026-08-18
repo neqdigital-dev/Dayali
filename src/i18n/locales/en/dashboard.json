@@ -7,12 +7,17 @@
     "title": "Water",
     "cups": "cups",
     "goal_reached": "Goal reached! 🎉",
-    "add_cup": "Add cup"
+    "add_cup": "Add cup",
+    "fill": "Fill Bottle",
+    "two_cups": "2 Cups",
+    "half": "Half Bottle",
+    "full": "Empty Bottle"
   },
   "progress": {
     "title": "Today's Progress",
     "completed": "completed",
-    "tasks_done": "{{done}} of {{total}} tasks"
+    "tasks_done": "{{done}} of {{total}} tasks",
+    "water": "Water"
   },
   "agenda_preview": {
     "title": "Agenda",

@@ -12,15 +12,15 @@ export default function Tasks() {
 
   const personalTasks = activeTasks
     .filter(t => t.category === 'personal')
-    .map(t => ({ id: t.id, title_pt: t.title, title_en: t.title, priority: 'normal' as const, completed: t.completed, time: t.time, date: t.date, notes: t.notes }));
+    .map(t => ({ id: t.id, title_pt: t.title_pt, title_en: t.title_en || t.title_pt, priority: 'normal' as const, completed: t.completed, time: t.time, date: t.date, notes: t.notes }));
 
   const workTasks = activeTasks
     .filter(t => t.category === 'work')
-    .map(t => ({ id: t.id, title_pt: t.title, title_en: t.title, priority: 'normal' as const, completed: t.completed, time: t.time, date: t.date, notes: t.notes }));
+    .map(t => ({ id: t.id, title_pt: t.title_pt, title_en: t.title_en || t.title_pt, priority: 'normal' as const, completed: t.completed, time: t.time, date: t.date, notes: t.notes }));
 
   const churchTasks = activeTasks
     .filter(t => t.category === 'church')
-    .map(t => ({ id: t.id, title_pt: t.title, title_en: t.title, priority: 'normal' as const, completed: t.completed, time: t.time, date: t.date, notes: t.notes }));
+    .map(t => ({ id: t.id, title_pt: t.title_pt, title_en: t.title_en || t.title_pt, priority: 'normal' as const, completed: t.completed, time: t.time, date: t.date, notes: t.notes }));
 
   return (
     <div className="page-container">
@@ -59,7 +59,7 @@ export default function Tasks() {
             onDeleteTask={(id) => deleteMasterTask(id)}
             onUpdateTask={updateMasterTask}
             onAddSubmit={(title) => {
-              addMasterTask({ title, category: 'personal', repeatType: activeTab });
+              addMasterTask({ title_pt: title, category: 'personal', repeatType: activeTab });
             }}
           />
           <TaskColumn 
@@ -69,7 +69,7 @@ export default function Tasks() {
             onDeleteTask={(id) => deleteMasterTask(id)}
             onUpdateTask={updateMasterTask}
             onAddSubmit={(title) => {
-              addMasterTask({ title, category: 'work', repeatType: activeTab });
+              addMasterTask({ title_pt: title, category: 'work', repeatType: activeTab });
             }}
           />
           {(activeTab === 'saturday' || activeTab === 'sunday') && (
@@ -80,7 +80,7 @@ export default function Tasks() {
               onDeleteTask={(id) => deleteMasterTask(id)}
               onUpdateTask={updateMasterTask}
               onAddSubmit={(title) => {
-                addMasterTask({ title, category: 'church', repeatType: activeTab });
+                addMasterTask({ title_pt: title, category: 'church', repeatType: activeTab });
               }}
             />
           )}

@@ -12,6 +12,7 @@ CREATE TABLE public.profiles (
   water_cup_ml INTEGER DEFAULT 250,
   close_to_tray BOOLEAN DEFAULT TRUE,
   start_with_windows BOOLEAN DEFAULT FALSE,
+  dashboard_columns JSONB DEFAULT '[["personal"], ["work"], ["college", "church"]]'::jsonb,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );

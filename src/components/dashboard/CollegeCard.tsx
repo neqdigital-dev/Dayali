@@ -20,7 +20,7 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
 
   const handleAddEvent = () => {
     if (newEventTitle.trim() && newEventDate) {
-      addAgendaEvent({ title: newEventTitle.trim(), date: newEventDate, category: 'college', subtopics: [] });
+      addAgendaEvent({ title_pt: newEventTitle.trim(), date: newEventDate, category: 'college', subtopics: [] });
       setNewEventTitle('');
       setNewEventDate('');
       setIsAddingEvent(false);
@@ -90,7 +90,7 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
         )}
 
         {collegeEvents.length === 0 && !isAddingEvent && (
-          <p className="text-sm text-tertiary" style={{ padding: 'var(--space-2)' }}>Nenhuma avaliação ou trabalho pendente.</p>
+          <p className="text-sm text-tertiary" style={{ padding: 'var(--space-2)' }}>{t('empty.events', { ns: 'common', defaultValue: 'Nenhuma prova pendente.' })}</p>
         )}
 
         {collegeEvents.map(event => (
@@ -98,7 +98,7 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
             {/* Event Header styling like a Task */}
             <div className="task-item" style={{ background: 'var(--color-bg-subtle)' }}>
               <div className="task-content" style={{ flex: 1 }}>
-                <span className="task-title">{event.title}</span>
+                <span className="task-title">{lang === 'en' && event.title_en ? event.title_en : event.title_pt}</span>
                 <div style={{ display: 'flex', gap: '4px', marginTop: '2px', alignItems: 'center' }}>
                   <BookOpen size={10} style={{ color: 'var(--color-text-tertiary)' }} />
                   <span className="badge" style={{ background: 'var(--color-bg-base)', fontSize: '9px' }}>{event.date.split('-').reverse().join('/')}</span>
@@ -126,7 +126,7 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
                     )}
                   </div>
                   <div className="task-content" style={{ flex: 1 }}>
-                    <span className="task-title" style={{ textDecoration: sub.completed ? 'line-through' : 'none' }}>{sub.title}</span>
+                    <span className="task-title" style={{ textDecoration: sub.completed ? 'line-through' : 'none' }}>{lang === 'en' && sub.title_en ? sub.title_en : sub.title_pt}</span>
                   </div>
                   <div className="task-actions" style={{ display: 'flex', gap: '8px' }}>
                     <button className="btn-icon" onClick={() => deleteSubtopic(event.id, sub.id)} style={{ width: 28, height: 28 }}>

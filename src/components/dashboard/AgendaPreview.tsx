@@ -7,7 +7,7 @@ const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
 
 export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
-  const { t } = useTranslation('dashboard');
+  const { t, i18n } = useTranslation(['dashboard', 'common']);
   const { addAgendaEvent, deleteAgendaEvent } = useDataStore();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<'month' | 'week' | 'list'>('month');
@@ -36,7 +36,8 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
       if (localDate.getMonth() === month && localDate.getFullYear() === year) {
         const day = localDate.getDate().toString();
         if (!acc[day]) acc[day] = [];
-        acc[day].push({ id: task.id, title: task.title_pt || task.title, type: task.category });
+        const displayTitle = i18n.language === 'en' && task.title_en ? task.title_en : task.title_pt || task.title;
+        acc[day].push({ id: task.id, title: displayTitle, type: task.category });
       }
     }
     return acc;
@@ -74,16 +75,16 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
       <div className="agenda-card-header" style={{ marginBottom: 'var(--space-4)' }}>
         <div className="agenda-card-title-row">
           <CalendarIcon size={18} style={{ color: 'var(--color-primary)' }} />
-          <h3 className="agenda-card-title">Agenda (Visão Calendário)</h3>
+          <h3 className="agenda-card-title">{t('agenda.title', { ns: 'dashboard', defaultValue: 'Agenda (Visão Calendário)' })}</h3>
         </div>
         <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
           <button className="btn-icon" title={t('actions.add')} style={{ width: 28, height: 28, background: 'var(--color-bg-subtle)' }}>
             <Plus size={16} />
           </button>
           <div style={{ display: 'flex', background: 'var(--color-bg-subtle)', borderRadius: 'var(--radius-md)', padding: '2px' }}>
-            <button className={`btn btn-sm ${view === 'month' ? 'btn-primary' : 'btn-ghost'}`} style={{ padding: '0 8px' }} onClick={() => setView('month')}>Mensal</button>
-            <button className={`btn btn-sm ${view === 'week' ? 'btn-primary' : 'btn-ghost'}`} style={{ padding: '0 8px' }} onClick={() => setView('week')}>Semanal</button>
-            <button className={`btn btn-sm ${view === 'list' ? 'btn-primary' : 'btn-ghost'}`} style={{ padding: '0 8px' }} onClick={() => setView('list')}>Lista</button>
+            <button className={`btn btn-sm ${view === 'month' ? 'btn-primary' : 'btn-ghost'}`} style={{ padding: '0 8px' }} onClick={() => setView('month')}>{t('view.monthly', { ns: 'dashboard', defaultValue: 'Mensal' })}</button>
+            <button className={`btn btn-sm ${view === 'week' ? 'btn-primary' : 'btn-ghost'}`} style={{ padding: '0 8px' }} onClick={() => setView('week')}>{t('view.weekly', { ns: 'dashboard', defaultValue: 'Semanal' })}</button>
+            <button className={`btn btn-sm ${view === 'list' ? 'btn-primary' : 'btn-ghost'}`} style={{ padding: '0 8px' }} onClick={() => setView('list')}>{t('view.list', { ns: 'dashboard', defaultValue: 'Lista' })}</button>
           </div>
         </div>
       </div>
@@ -92,7 +93,7 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
         <span style={{ fontWeight: 'var(--weight-semibold)' }}>{monthLabel}</span>
         <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
           <button className="btn-icon" onClick={() => setCurrentDate(new Date(year, month - 1, 1))}><ChevronLeft size={16}/></button>
-          <button className="btn btn-ghost btn-sm" onClick={() => setCurrentDate(new Date())}>Hoje</button>
+          <button className="btn btn-ghost btn-sm" onClick={() => setCurrentDate(new Date())}>{t('agenda.today', { ns: 'dashboard', defaultValue: 'Hoje' })}</button>
           <button className="btn-icon" onClick={() => setCurrentDate(new Date(year, month + 1, 1))}><ChevronRight size={16}/></button>
         </div>
       </div>

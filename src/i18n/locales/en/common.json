@@ -62,7 +62,8 @@
   "category": {
     "personal": "Personal",
     "work": "Work",
-    "college": "College"
+    "college": "College",
+    "church": "Personal & Church"
   },
   "time": {
     "today": "Today",

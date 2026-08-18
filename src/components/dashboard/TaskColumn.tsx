@@ -25,6 +25,7 @@ interface TaskColumnProps {
   onDeleteTask?: (id: string) => void;
   onUpdateTask?: (id: string, updates: Partial<TaskItem>) => void;
   onAddSubmit?: (title: string) => void;
+  onReorderTask?: (activeId: string, overId: string) => void;
   dragHandleProps?: any;
 }
 
@@ -36,9 +37,14 @@ const categoryConfig: Record<Category, { iconBg: string; label: string }> = {
 };
 
 function SortableTask({ task, onToggleTask, onDeleteTask, onUpdateTask }: { task: TaskItem; onToggleTask?: (id: string, c: boolean) => void; onDeleteTask?: (id: string) => void; onUpdateTask?: (id: string, u: Partial<TaskItem>) => void }) {
+  const { t, i18n } = useTranslation(['dashboard', 'common']);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id });
   const [isEditing, setIsEditing] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
+  
+  const isEn = i18n.language === 'en';
+  const displayTitle = isEn && task.title_en ? task.title_en : task.title_pt;
+  
   const [editTitle, setEditTitle] = useState(task.title_pt);
   const [editTime, setEditTime] = useState(task.time || '');
   const [editDate, setEditDate] = useState(task.date || '');
@@ -105,9 +111,9 @@ function SortableTask({ task, onToggleTask, onDeleteTask, onUpdateTask }: { task
           <span 
             className="task-title" 
             style={{ textDecoration: task.completed ? 'line-through' : 'none' }}
-            onClick={(e) => { e.stopPropagation(); setIsEditingTitle(true); }}
+            onClick={(e) => { e.stopPropagation(); setIsEditingTitle(true); setEditTitle(task.title_pt); }}
           >
-            {task.title_pt}
+            {displayTitle}
           </span>
         )}
         
@@ -150,7 +156,7 @@ function SortableTask({ task, onToggleTask, onDeleteTask, onUpdateTask }: { task
   );
 }
 
-export default function TaskColumn({ category, tasks: initialTasks, onToggleTask, onDeleteTask, onUpdateTask, onAddSubmit, dragHandleProps }: TaskColumnProps) {
+export default function TaskColumn({ category, tasks: initialTasks, onToggleTask, onDeleteTask, onUpdateTask, onAddSubmit, onReorderTask, dragHandleProps }: TaskColumnProps) {
   const { t } = useTranslation(['dashboard', 'common']);
   const [tasks, setTasks] = useState(initialTasks);
   const [isAdding, setIsAdding] = useState(false);
@@ -171,12 +177,15 @@ export default function TaskColumn({ category, tasks: initialTasks, onToggleTask
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
-    if (active.id !== over.id) {
+    if (over && active.id !== over.id) {
       setTasks((items) => {
         const oldIndex = items.findIndex((i) => i.id === active.id);
         const newIndex = items.findIndex((i) => i.id === over.id);
         return arrayMove(items, oldIndex, newIndex);
       });
+      if (onReorderTask) {
+        onReorderTask(active.id, over.id);
+      }
     }
   };
 

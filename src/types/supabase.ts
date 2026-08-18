@@ -20,6 +20,7 @@ export interface Database {
           water_cup_ml: number | null
           close_to_tray: boolean | null
           start_with_windows: boolean | null
+          dashboard_columns: Json | null
           created_at: string | null
           updated_at: string | null
         }
@@ -33,6 +34,7 @@ export interface Database {
           water_cup_ml?: number | null
           close_to_tray?: boolean | null
           start_with_windows?: boolean | null
+          dashboard_columns?: Json | null
           created_at?: string | null
           updated_at?: string | null
         }
@@ -46,6 +48,7 @@ export interface Database {
           water_cup_ml?: number | null
           close_to_tray?: boolean | null
           start_with_windows?: boolean | null
+          dashboard_columns?: Json | null
           created_at?: string | null
           updated_at?: string | null
         }
