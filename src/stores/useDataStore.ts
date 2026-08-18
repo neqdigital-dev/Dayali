@@ -33,6 +33,7 @@ interface DataState {
   agendaEvents: AgendaEvent[];
   waterSteps: Record<string, boolean>;
   dashboardColumns: string[][];
+  reflectionText: string;
   
   addMasterTask: (task: Omit<MasterTask, 'id' | 'completed'>) => void;
   toggleMasterTask: (id: string) => void;
@@ -49,6 +50,7 @@ interface DataState {
   
   toggleWaterStep: (id: string) => void;
   setDashboardColumns: (columns: string[][]) => void;
+  setReflectionText: (text: string) => void;
 }
 
 const supabaseStorage: StateStorage = {
@@ -140,6 +142,7 @@ export const useDataStore = create<DataState>()(
         ['college'],
         ['church']
       ],
+      reflectionText: '',
 
       addMasterTask: (task) => {
         const id = Math.random().toString();
@@ -261,7 +264,8 @@ export const useDataStore = create<DataState>()(
         }
       })),
 
-      setDashboardColumns: (columns) => set({ dashboardColumns: columns })
+      setDashboardColumns: (columns) => set({ dashboardColumns: columns }),
+      setReflectionText: (text) => set({ reflectionText: text }),
     }),
     {
       name: 'dayali-storage-v2',

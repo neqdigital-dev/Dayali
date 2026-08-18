@@ -1,9 +1,12 @@
 import { useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
+import { useDataStore } from '../../stores/useDataStore';
 
 export default function SpiritualCard() {
   const { i18n } = useTranslation();
   const isEn = i18n.language === 'en';
+  const reflectionText = useDataStore((s) => s.reflectionText);
+  const setReflectionText = useDataStore((s) => s.setReflectionText);
 
   const headerText = isEn ? "Youth Sabbath School Lesson" : "Lição da Escola Sabatina Jovem";
   const verses = [
@@ -72,6 +75,8 @@ export default function SpiritualCard() {
           <textarea 
             className="input" 
             placeholder={reflectionPlaceholder} 
+            value={reflectionText || ''}
+            onChange={(e) => setReflectionText(e.target.value)}
             style={{ 
               width: '100%', 
               minHeight: '120px', 
