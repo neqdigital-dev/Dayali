@@ -1,4 +1,4 @@
-import { DndContext, closestCenter, useSensor, useSensors, PointerSensor, type DragEndEvent, type DragOverEvent, useDroppable } from '@dnd-kit/core';
+import { DndContext, pointerWithin, useSensor, useSensors, PointerSensor, type DragEndEvent, type DragOverEvent, useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useDataStore } from '../stores/useDataStore';
@@ -34,7 +34,14 @@ function DroppableColumn({ id, items, renderItem }: { id: string, items: string[
     <SortableContext id={id} items={items} strategy={verticalListSortingStrategy}>
       <div 
         ref={setNodeRef} 
-        style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', minHeight: '150px' }}
+        style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 'var(--space-4)', 
+          minHeight: '150px',
+          flex: '0 0 320px',
+          width: '320px'
+        }}
       >
         {items.map(renderItem)}
       </div>
@@ -197,21 +204,29 @@ export default function Dashboard() {
       {/* Progress Section */}
       <div className="dashboard-progress" style={{ gridColumn: '1 / -1' }}>
         <div className="card" style={{ padding: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '2px' }}>
-            <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--weight-semibold)', whiteSpace: 'nowrap' }}>
-              {i18n.language === 'en' ? 'Daily Progress' : 'Progresso do dia'}
-            </span>
-            <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--weight-bold)', color: 'var(--color-primary)' }}>{overallProgress}%</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--weight-medium)', color: 'var(--color-text-secondary)' }}>Progresso do Dia</span>
+            <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--weight-bold)', color: 'var(--color-primary)' }}>{Math.round(overallProgress)}%</span>
           </div>
-          <div style={{ width: '100%', height: 4, background: 'var(--color-bg-subtle)', borderRadius: 2, overflow: 'hidden' }}>
-            <div style={{ height: '100%', background: 'var(--color-primary)', width: `${overallProgress}%`, transition: 'width 0.4s ease' }} />
+          <div className="progress-bar">
+            <div className="progress-fill" style={{ width: `${overallProgress}%`, background: 'var(--color-primary)' }} />
           </div>
         </div>
       </div>
 
       {/* Main Columns */}
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
-        <div className="dashboard-columns" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 'var(--space-4)', alignItems: 'start' }}>
+      <DndContext sensors={sensors} collisionDetection={pointerWithin} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
+        <div 
+          className="dashboard-columns custom-scrollbar" 
+          style={{ 
+            display: 'flex', 
+            gap: 'var(--space-4)', 
+            alignItems: 'flex-start',
+            overflowX: 'auto',
+            paddingBottom: 'var(--space-4)',
+            width: '100%'
+          }}
+        >
           {(dashboardColumns || []).map((colItems, colIndex) => (
             <DroppableColumn key={colIndex} id={`col-${colIndex}`} items={colItems} renderItem={(id) => (
               <SortableCard key={id} id={id} render={(dragProps) => renderCard(id, dragProps)} />
