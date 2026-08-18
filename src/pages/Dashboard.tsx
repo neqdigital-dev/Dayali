@@ -56,7 +56,8 @@ export default function Dashboard() {
     let activeContainerIndex = -1;
     let overContainerIndex = -1;
 
-    dashboardColumns.forEach((col, index) => {
+    const columns = dashboardColumns || [];
+    columns.forEach((col, index) => {
       if (col.includes(activeId)) activeContainerIndex = index;
       if (col.includes(overId) || `col-${index}` === overId) overContainerIndex = index;
     });
@@ -78,7 +79,7 @@ export default function Dashboard() {
       overIndex = overItems.length;
     }
 
-    const newColumns = [...dashboardColumns];
+    const newColumns = [...columns];
     newColumns[activeContainerIndex] = [...activeItems];
     newColumns[overContainerIndex] = [...overItems];
 
@@ -98,18 +99,19 @@ export default function Dashboard() {
     let activeContainerIndex = -1;
     let overContainerIndex = -1;
 
-    dashboardColumns.forEach((col, index) => {
+    const columns = dashboardColumns || [];
+    columns.forEach((col, index) => {
       if (col.includes(activeId)) activeContainerIndex = index;
       if (col.includes(overId) || `col-${index}` === overId) overContainerIndex = index;
     });
 
     if (activeContainerIndex !== -1 && activeContainerIndex === overContainerIndex) {
-      const items = dashboardColumns[activeContainerIndex];
+      const items = columns[activeContainerIndex];
       const activeIndex = items.indexOf(activeId);
       const overIndex = items.indexOf(overId);
 
       if (activeIndex !== overIndex) {
-        const newColumns = [...dashboardColumns];
+        const newColumns = [...columns];
         newColumns[activeContainerIndex] = arrayMove(items, activeIndex, overIndex);
         setDashboardColumns(newColumns);
       }
