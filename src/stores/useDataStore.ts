@@ -18,6 +18,9 @@ export interface AgendaEvent {
   title_pt: string;
   title_en?: string | null;
   date: string; // YYYY-MM-DD
+  time?: string;
+  notes?: string;
+  link?: string;
   category: string;
   subtopics?: { id: string; title_pt: string; title_en?: string | null; completed: boolean }[];
 }
@@ -35,6 +38,7 @@ interface DataState {
   reorderMasterTasks: (activeId: string, overId: string) => void;
   
   addAgendaEvent: (event: Omit<AgendaEvent, 'id'>) => void;
+  updateAgendaEvent: (id: string, updates: Partial<AgendaEvent>) => void;
   deleteAgendaEvent: (id: string) => void;
   addSubtopic: (eventId: string, title: string) => void;
   toggleSubtopic: (eventId: string, subtopicId: string) => void;
@@ -131,6 +135,27 @@ export const useDataStore = create<DataState>()(
   deleteAgendaEvent: (id) => set((state) => ({
     agendaEvents: state.agendaEvents.filter(e => e.id !== id)
   })),
+
+  updateAgendaEvent: (id, updates) => set((state) => {
+    const event = state.agendaEvents.find(e => e.id === id);
+    if (!event) return state;
+
+    const updatedEvent = { ...event, ...updates };
+
+    // Tradução automática do título, se alterado
+    if (updates.title_pt && updates.title_pt !== event.title_pt) {
+      import('../services/translation').then(async ({ translationService }) => {
+        const title_en = await translationService.translateToEnglish(updates.title_pt!);
+        if (title_en !== updates.title_pt) {
+          useDataStore.getState().updateAgendaEvent(id, { title_en });
+        }
+      });
+    }
+
+    return {
+      agendaEvents: state.agendaEvents.map(e => e.id === id ? updatedEvent : e)
+    };
+  }),
 
   addSubtopic: (eventId, title_pt) => {
     const subtopicId = Math.random().toString();

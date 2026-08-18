@@ -209,7 +209,7 @@ export default function Dashboard() {
 
       {/* Main Columns */}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
-        <div className="dashboard-columns" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 'var(--space-4)', alignItems: 'start' }}>
+        <div className="dashboard-columns" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 'var(--space-4)', alignItems: 'start' }}>
           {(dashboardColumns || []).map((colItems, colIndex) => (
             <DroppableColumn key={colIndex} id={`col-${colIndex}`} items={colItems} renderItem={(id) => (
               <SortableCard key={id} id={id} render={(dragProps) => renderCard(id, dragProps)} />

@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, Plus, Trash2, GripVertical } from 'lucide-react';
 import { getDaysUntilLabel } from '../../lib/dates';
-import { useDataStore } from '../../stores/useDataStore';
+import { useDataStore, type AgendaEvent } from '../../stores/useDataStore';
+import EventModal from '../ui/EventModal';
 
 export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any }) {
   const { t, i18n } = useTranslation(['dashboard', 'common']);
@@ -17,6 +18,8 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
   
   const [addingSubtopicTo, setAddingSubtopicTo] = useState<string | null>(null);
   const [newSubtopicTitle, setNewSubtopicTitle] = useState('');
+
+  const [editingEvent, setEditingEvent] = useState<AgendaEvent | null>(null);
 
   const handleAddEvent = () => {
     if (newEventTitle.trim() && newEventDate) {
@@ -97,8 +100,14 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
           <div key={event.id} style={{ marginBottom: 'var(--space-4)' }}>
             {/* Event Header styling like a Task */}
             <div className="task-item" style={{ background: 'var(--color-bg-subtle)' }}>
-              <div className="task-content" style={{ flex: 1 }}>
-                <span className="task-title">{lang === 'en' && event.title_en ? event.title_en : event.title_pt}</span>
+              <div 
+                className="task-content" 
+                style={{ flex: 1, cursor: 'pointer' }}
+                onClick={() => setEditingEvent(event)}
+              >
+                <span className="task-title" style={{ transition: 'color 0.2s' }}>
+                  {lang === 'en' && event.title_en ? event.title_en : event.title_pt}
+                </span>
                 <div style={{ display: 'flex', gap: '4px', marginTop: '2px', alignItems: 'center' }}>
                   <BookOpen size={10} style={{ color: 'var(--color-text-tertiary)' }} />
                   <span className="badge" style={{ background: 'var(--color-bg-base)', fontSize: '9px' }}>{event.date.split('-').reverse().join('/')}</span>
@@ -158,6 +167,17 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
           </div>
         ))}
       </div>
+
+      <EventModal 
+        isOpen={!!editingEvent}
+        onClose={() => setEditingEvent(null)}
+        event={editingEvent}
+        onSave={(updates) => {
+          if (editingEvent) {
+            useDataStore.getState().updateAgendaEvent(editingEvent.id, updates);
+          }
+        }}
+      />
     </div>
   );
 }
