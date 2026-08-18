@@ -1,11 +1,52 @@
 import { useAppStore } from '../stores/useAppStore';
 import { useAuthStore } from '../stores/useAuthStore';
-import { User, Bell, Globe, Moon, Sun, Monitor, DownloadCloud, LogOut } from 'lucide-react';
+import { User, Bell, Globe, Moon, Sun, Monitor, DownloadCloud, LogOut, Upload } from 'lucide-react';
 import DataImporter from '../components/settings/DataImporter';
-
+import { supabase } from '../lib/supabase';
+import { useRef, useState } from 'react';
 export default function Settings() {
   const { theme, setTheme, language, setLanguage } = useAppStore();
   const { user, signOut } = useAuthStore();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    try {
+      setUploading(true);
+      if (!event.target.files || event.target.files.length === 0) {
+        throw new Error('Você deve selecionar uma imagem para enviar.');
+      }
+
+      const file = event.target.files[0];
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user?.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      let { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+
+      await supabase.auth.updateUser({
+        data: { avatar_url: data.publicUrl }
+      });
+      
+      // Atualiza localmente
+      useAuthStore.setState({ user: { ...user, user_metadata: { ...user?.user_metadata, avatar_url: data.publicUrl } } as any });
+
+    } catch (error: any) {
+      alert(error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
 
 
   return (
@@ -24,9 +65,19 @@ export default function Settings() {
             <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--weight-semibold)', margin: 0 }}>Perfil</h2>
           </div>
           <div className="card" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-4)' }}>
-            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--color-bg-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <User size={32} color="var(--color-text-tertiary)" />
+            <div 
+              style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--color-bg-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', cursor: 'pointer', position: 'relative' }}
+              onClick={() => fileInputRef.current?.click()}
+              title="Trocar foto de perfil"
+            >
+              {avatarUrl ? (
+                <img src={avatarUrl} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <User size={32} color="var(--color-text-tertiary)" />
+              )}
+              {uploading && <div style={{ position: 'absolute', background: 'rgba(0,0,0,0.5)', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>...</div>}
             </div>
+            <input type="file" accept="image/*" style={{ display: 'none' }} ref={fileInputRef} onChange={handleAvatarUpload} />
             <div>
               <h3 style={{ margin: 0, fontSize: 'var(--text-md)', fontWeight: 'var(--weight-medium)' }}>
                 {user && user.id !== 'mock-user-id' ? user.email : 'Usuário Local'}

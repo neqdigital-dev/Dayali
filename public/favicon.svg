@@ -1,10 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
   <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="32" y2="32">
-      <stop offset="0%" stop-color="#6B8AFF"/>
-      <stop offset="100%" stop-color="#4A6CF7"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="32" y2="32">
+      <stop offset="0%" stop-color="#4A7AF5"/>
+      <stop offset="100%" stop-color="#2D54C4"/>
     </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
   </defs>
-  <rect width="32" height="32" rx="8" fill="url(#g)"/>
-  <text x="16" y="22" text-anchor="middle" font-family="system-ui, sans-serif" font-weight="700" font-size="18" fill="white">D</text>
+  <rect width="32" height="32" rx="8" fill="url(#bg)"/>
+  
+  <!-- Calendar Top Bar -->
+  <path d="M8 10h16v4H8z" fill="#ffffff" opacity="0.9"/>
+  <rect x="10" y="6" width="2" height="6" rx="1" fill="#FFC107"/>
+  <rect x="20" y="6" width="2" height="6" rx="1" fill="#FFC107"/>
+  
+  <!-- Calendar Body -->
+  <path d="M8 14h16v10a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2v-10z" fill="#ffffff"/>
+  
+  <!-- Checkmark -->
+  <path d="M12 18l3 3 5-5" stroke="#4A7AF5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
