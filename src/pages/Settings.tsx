@@ -1,9 +1,12 @@
 import { useAppStore } from '../stores/useAppStore';
-import { User, Bell, Globe, Moon, Sun, Monitor, DownloadCloud } from 'lucide-react';
+import { useAuthStore } from '../stores/useAuthStore';
+import { User, Bell, Globe, Moon, Sun, Monitor, DownloadCloud, LogOut } from 'lucide-react';
 import DataImporter from '../components/settings/DataImporter';
 
 export default function Settings() {
   const { theme, setTheme, language, setLanguage } = useAppStore();
+  const { user, signOut } = useAuthStore();
+
 
   return (
     <div className="page-container">
@@ -25,10 +28,23 @@ export default function Settings() {
               <User size={32} color="var(--color-text-tertiary)" />
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: 'var(--text-md)', fontWeight: 'var(--weight-medium)' }}>Usuário Local</h3>
-              <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>Acesso sem login ativado.</p>
+              <h3 style={{ margin: 0, fontSize: 'var(--text-md)', fontWeight: 'var(--weight-medium)' }}>
+                {user && user.id !== 'mock-user-id' ? user.email : 'Usuário Local'}
+              </h3>
+              <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>
+                {user && user.id !== 'mock-user-id' ? 'Conta sincronizada na nuvem.' : 'Acesso sem login ativado.'}
+              </p>
             </div>
-            <button className="btn btn-outline" style={{ marginLeft: 'auto' }}>Editar Perfil</button>
+            {user && user.id !== 'mock-user-id' && (
+              <button 
+                className="btn btn-outline" 
+                style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}
+                onClick={signOut}
+              >
+                <LogOut size={16} />
+                Sair
+              </button>
+            )}
           </div>
         </section>
 
