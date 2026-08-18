@@ -1357,6 +1357,10 @@ body {
   font-weight: var(--weight-regular);
   color: var(--color-text);
   transition: all var(--transition-fast);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 
 .task-meta {

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, Plus, Trash2, GripVertical } from 'lucide-react';
-import { getDaysUntilLabel } from '../../lib/dates';
+import { getDaysUntil, getDaysUntilLabel } from '../../lib/dates';
 import { useDataStore, type AgendaEvent } from '../../stores/useDataStore';
 import EventModal from '../ui/EventModal';
 
@@ -12,6 +12,13 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
   const { agendaEvents, addAgendaEvent, addSubtopic, toggleSubtopic, deleteSubtopic, deleteAgendaEvent } = useDataStore();
   
   const collegeEvents = agendaEvents.filter(e => e.category === 'college');
+  
+  // Sorting and filtering
+  const sortedEvents = [...collegeEvents].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const [showAll, setShowAll] = useState(false);
+  const visibleEvents = showAll ? sortedEvents : sortedEvents.filter(e => getDaysUntil(e.date) <= 30);
+  const hiddenCount = sortedEvents.length - visibleEvents.length;
+
   const [isAddingEvent, setIsAddingEvent] = useState(false);
   const [newEventTitle, setNewEventTitle] = useState('');
   const [newEventDate, setNewEventDate] = useState('');
@@ -96,7 +103,7 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
           <p className="text-sm text-tertiary" style={{ padding: 'var(--space-2)' }}>{t('empty.events', { ns: 'common', defaultValue: 'Nenhuma prova pendente.' })}</p>
         )}
 
-        {collegeEvents.map(event => (
+        {visibleEvents.map(event => (
           <div key={event.id} style={{ marginBottom: 'var(--space-4)' }}>
             {/* Event Header styling like a Task */}
             <div className="task-item" style={{ background: 'var(--color-bg-subtle)' }}>
@@ -166,6 +173,26 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
             </div>
           </div>
         ))}
+        
+        {hiddenCount > 0 && !showAll && (
+          <button 
+            className="btn btn-ghost btn-sm" 
+            style={{ width: '100%', marginTop: 'var(--space-2)' }} 
+            onClick={() => setShowAll(true)}
+          >
+            Ver mais {hiddenCount} {hiddenCount === 1 ? 'evento futuro' : 'eventos futuros'}
+          </button>
+        )}
+        
+        {showAll && hiddenCount > 0 && (
+          <button 
+            className="btn btn-ghost btn-sm" 
+            style={{ width: '100%', marginTop: 'var(--space-2)' }} 
+            onClick={() => setShowAll(false)}
+          >
+            Ver menos
+          </button>
+        )}
       </div>
 
       <EventModal 

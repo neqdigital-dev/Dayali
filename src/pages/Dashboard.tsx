@@ -1,4 +1,4 @@
-import { DndContext, pointerWithin, useSensor, useSensors, PointerSensor, type DragEndEvent, type DragOverEvent, useDroppable } from '@dnd-kit/core';
+import { DndContext, closestCenter, useSensor, useSensors, PointerSensor, type DragEndEvent, type DragOverEvent, useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useDataStore } from '../stores/useDataStore';
@@ -199,7 +199,7 @@ export default function Dashboard() {
       </div>
 
       {/* Main Columns */}
-      <DndContext sensors={sensors} collisionDetection={pointerWithin} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
         <div 
           className="dashboard-columns custom-scrollbar" 
           style={{ 

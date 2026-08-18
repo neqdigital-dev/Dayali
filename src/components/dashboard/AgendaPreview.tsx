@@ -125,18 +125,20 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
 
         {/* Blank days */}
         {blanks.map(b => (
-          <div key={`blank-${b}`} style={{ background: 'var(--color-bg-base)', minHeight: '80px' }} />
+          <div key={`blank-${b}`} style={{ background: 'var(--color-bg-base)', height: '110px' }} />
         ))}
 
         {/* Days */}
         {days.map(day => {
           const events = getEventsForDay(day.toString());
           return (
-            <div key={day} style={{ 
+            <div key={day} className="custom-scrollbar" style={{ 
               background: 'var(--color-bg-base)', 
-              minHeight: '80px', 
+              height: '110px', 
               padding: 'var(--space-2)',
-              position: 'relative'
+              position: 'relative',
+              overflowY: 'auto',
+              overflowX: 'hidden'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span style={{ 
@@ -155,25 +157,35 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
               </div>
 
               <div style={{ marginTop: 'var(--space-2)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                {events.map((ev: any, i: number) => (
-                  <div key={i} style={{
-                    fontSize: '0.65rem',
-                    padding: '2px 4px',
-                    background: ev.type === 'preaching' ? 'var(--color-bg-subtle)' : 'var(--color-bg-elevated)',
-                    borderLeft: `2px solid ${ev.type === 'preaching' ? 'var(--color-preaching)' : 'var(--color-primary)'}`,
-                    borderRadius: '2px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                  }}>
-                    <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{ev.title}</span>
-                    {ev.id && (
-                      <button onClick={() => deleteAgendaEvent(ev.id!)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5 }}>
-                        <Trash2 size={10} color="var(--color-error)" />
-                      </button>
-                    )}
-                  </div>
-                ))}
+                {events.map((ev: any, i: number) => {
+                  let bgCol = 'var(--color-primary-ghost)';
+                  let borderCol = 'var(--color-primary)';
+                  if (ev.type === 'college') { bgCol = 'var(--color-college-bg, hsla(152, 55%, 42%, 0.1))'; borderCol = 'var(--color-college, hsl(152, 55%, 42%))'; }
+                  if (ev.type === 'work') { bgCol = 'var(--color-work-bg, hsla(200, 70%, 50%, 0.1))'; borderCol = 'var(--color-work, hsl(200, 70%, 50%))'; }
+                  if (ev.type === 'personal' || ev.type === 'church') { bgCol = 'var(--color-warning-bg, hsla(38, 80%, 52%, 0.1))'; borderCol = 'var(--color-warning, hsl(38, 80%, 52%))'; }
+
+                  return (
+                    <div key={i} style={{
+                      fontSize: '0.65rem',
+                      padding: '2px 4px',
+                      background: bgCol,
+                      borderLeft: `2px solid ${borderCol}`,
+                      borderRadius: '2px',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      maxWidth: '100%',
+                      overflow: 'hidden'
+                    }}>
+                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }} title={ev.title}>{ev.title}</span>
+                      {ev.id && (
+                        <button onClick={() => deleteAgendaEvent(ev.id!)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
+                          <Trash2 size={10} color="var(--color-error)" />
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
                 
                 {addingEventToDay === day && (
                   <div style={{ marginTop: '2px', display: 'flex', flexDirection: 'column', gap: '2px' }} onClick={e => e.stopPropagation()}>
@@ -228,11 +240,13 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
             const events = isCurrentMonth ? getEventsForDay(dayNum.toString()) : [];
             
             return (
-              <div key={i} style={{ 
+              <div key={i} className="custom-scrollbar" style={{ 
                 background: 'var(--color-bg-base)', 
-                minHeight: '150px', 
+                height: '150px', 
                 padding: 'var(--space-2)',
-                position: 'relative'
+                position: 'relative',
+                overflowY: 'auto',
+                overflowX: 'hidden'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-tertiary)' }}>{WEEKDAYS[i]}</span>
@@ -248,25 +262,35 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
                 </div>
 
                 <div style={{ marginTop: 'var(--space-2)', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                  {events.map((ev: any, i: number) => (
-                    <div key={i} style={{
-                      fontSize: '0.65rem',
-                      padding: '2px 4px',
-                      background: ev.type === 'preaching' ? 'var(--color-bg-subtle)' : 'var(--color-bg-elevated)',
-                      borderLeft: `2px solid ${ev.type === 'preaching' ? 'var(--color-preaching)' : 'var(--color-primary)'}`,
-                      borderRadius: '2px',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center'
-                    }}>
-                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{ev.title}</span>
-                      {ev.id && (
-                        <button onClick={() => deleteAgendaEvent(ev.id!)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5 }}>
-                          <Trash2 size={10} color="var(--color-error)" />
-                        </button>
-                      )}
-                    </div>
-                  ))}
+                  {events.map((ev: any, i: number) => {
+                    let bgCol = 'var(--color-primary-ghost)';
+                    let borderCol = 'var(--color-primary)';
+                    if (ev.type === 'college') { bgCol = 'var(--color-college-bg, hsla(152, 55%, 42%, 0.1))'; borderCol = 'var(--color-college, hsl(152, 55%, 42%))'; }
+                    if (ev.type === 'work') { bgCol = 'var(--color-work-bg, hsla(200, 70%, 50%, 0.1))'; borderCol = 'var(--color-work, hsl(200, 70%, 50%))'; }
+                    if (ev.type === 'personal' || ev.type === 'church') { bgCol = 'var(--color-warning-bg, hsla(38, 80%, 52%, 0.1))'; borderCol = 'var(--color-warning, hsl(38, 80%, 52%))'; }
+
+                    return (
+                      <div key={i} style={{
+                        fontSize: '0.65rem',
+                        padding: '2px 4px',
+                        background: bgCol,
+                        borderLeft: `2px solid ${borderCol}`,
+                        borderRadius: '2px',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        maxWidth: '100%',
+                        overflow: 'hidden'
+                      }}>
+                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }} title={ev.title}>{ev.title}</span>
+                        {ev.id && (
+                          <button onClick={() => deleteAgendaEvent(ev.id!)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
+                            <Trash2 size={10} color="var(--color-error)" />
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
                   
                   {addingEventToDay === dayNum && isCurrentMonth && (
                     <div style={{ marginTop: '2px', display: 'flex', flexDirection: 'column', gap: '2px' }} onClick={e => e.stopPropagation()}>
