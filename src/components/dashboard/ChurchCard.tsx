@@ -15,8 +15,8 @@ export default function ChurchCard({ dragHandleProps }: { dragHandleProps?: any 
   
   // Sorting and filtering
   const sortedEvents = [...churchEvents].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  const [showAll, setShowAll] = useState(false);
-  const visibleEvents = showAll ? sortedEvents : sortedEvents.filter(e => getDaysUntil(e.date) <= 30);
+  const [visibleCount, setVisibleCount] = useState(4);
+  const visibleEvents = sortedEvents.slice(0, visibleCount);
   const hiddenCount = sortedEvents.length - visibleEvents.length;
 
   const [isAddingEvent, setIsAddingEvent] = useState(false);
@@ -50,8 +50,8 @@ export default function ChurchCard({ dragHandleProps }: { dragHandleProps?: any 
   const progress = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
   return (
-    <div className="card task-column task-column-church">
-      <div className="card-header">
+    <div className="card card-category church">
+      <div className="task-column-header">
         <div style={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 'var(--space-2)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -106,7 +106,7 @@ export default function ChurchCard({ dragHandleProps }: { dragHandleProps?: any 
         )}
 
         {visibleEvents.map(event => (
-          <div key={event.id} style={{ marginBottom: 'var(--space-4)' }}>
+          <div key={event.id} style={{ marginBottom: 'var(--space-2)' }}>
             <div className="task-item" style={{ background: 'var(--color-bg-subtle)' }}>
               <div 
                 className="task-content" 
@@ -175,21 +175,21 @@ export default function ChurchCard({ dragHandleProps }: { dragHandleProps?: any 
           </div>
         ))}
 
-        {hiddenCount > 0 && !showAll && (
+        {hiddenCount > 0 && (
           <button 
             className="btn btn-ghost btn-sm" 
             style={{ width: '100%', marginTop: 'var(--space-2)' }} 
-            onClick={() => setShowAll(true)}
+            onClick={() => setVisibleCount(prev => prev + 4)}
           >
-            Ver mais {hiddenCount} {hiddenCount === 1 ? 'evento futuro' : 'eventos futuros'}
+            Ver mais {Math.min(hiddenCount, 4)} {Math.min(hiddenCount, 4) === 1 ? 'evento futuro' : 'eventos futuros'}
           </button>
         )}
         
-        {showAll && hiddenCount > 0 && (
+        {visibleCount > 4 && (
           <button 
             className="btn btn-ghost btn-sm" 
             style={{ width: '100%', marginTop: 'var(--space-2)' }} 
-            onClick={() => setShowAll(false)}
+            onClick={() => setVisibleCount(4)}
           >
             Ver menos
           </button>

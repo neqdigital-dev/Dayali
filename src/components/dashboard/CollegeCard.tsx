@@ -15,8 +15,8 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
   
   // Sorting and filtering
   const sortedEvents = [...collegeEvents].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  const [showAll, setShowAll] = useState(false);
-  const visibleEvents = showAll ? sortedEvents : sortedEvents.filter(e => getDaysUntil(e.date) <= 30);
+  const [visibleCount, setVisibleCount] = useState(4);
+  const visibleEvents = sortedEvents.slice(0, visibleCount);
   const hiddenCount = sortedEvents.length - visibleEvents.length;
 
   const [isAddingEvent, setIsAddingEvent] = useState(false);
@@ -104,7 +104,7 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
         )}
 
         {visibleEvents.map(event => (
-          <div key={event.id} style={{ marginBottom: 'var(--space-4)' }}>
+          <div key={event.id} style={{ marginBottom: 'var(--space-2)' }}>
             {/* Event Header styling like a Task */}
             <div className="task-item" style={{ background: 'var(--color-bg-subtle)' }}>
               <div 
@@ -174,21 +174,21 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
           </div>
         ))}
         
-        {hiddenCount > 0 && !showAll && (
+        {hiddenCount > 0 && (
           <button 
             className="btn btn-ghost btn-sm" 
             style={{ width: '100%', marginTop: 'var(--space-2)' }} 
-            onClick={() => setShowAll(true)}
+            onClick={() => setVisibleCount(prev => prev + 4)}
           >
-            Ver mais {hiddenCount} {hiddenCount === 1 ? 'evento futuro' : 'eventos futuros'}
+            Ver mais {Math.min(hiddenCount, 4)} {Math.min(hiddenCount, 4) === 1 ? 'evento futuro' : 'eventos futuros'}
           </button>
         )}
         
-        {showAll && hiddenCount > 0 && (
+        {visibleCount > 4 && (
           <button 
             className="btn btn-ghost btn-sm" 
             style={{ width: '100%', marginTop: 'var(--space-2)' }} 
-            onClick={() => setShowAll(false)}
+            onClick={() => setVisibleCount(4)}
           >
             Ver menos
           </button>

@@ -503,6 +503,7 @@ body {
 .card-category.personal { border-top-color: var(--color-personal); }
 .card-category.work { border-top-color: var(--color-work); }
 .card-category.college { border-top-color: var(--color-college); }
+.card-category.church { border-top-color: var(--color-warning); }
 
 /* === Input === */
 .input {
