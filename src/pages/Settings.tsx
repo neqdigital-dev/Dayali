@@ -1,5 +1,6 @@
 import { useAppStore } from '../stores/useAppStore';
-import { User, Bell, Globe, Moon, Sun, Monitor } from 'lucide-react';
+import { User, Bell, Globe, Moon, Sun, Monitor, DownloadCloud } from 'lucide-react';
+import DataImporter from '../components/settings/DataImporter';
 
 export default function Settings() {
   const { theme, setTheme, language, setLanguage } = useAppStore();
@@ -76,6 +77,12 @@ export default function Settings() {
                 <option value="en">English (US)</option>
               </select>
             </div>
+            
+            <hr className="divider" />
+            
+            {/* Data Importer */}
+            <DataImporter />
+
           </div>
         </section>
 
