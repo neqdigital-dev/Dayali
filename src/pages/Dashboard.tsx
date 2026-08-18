@@ -54,46 +54,8 @@ export default function Dashboard() {
   const { masterTasks, toggleMasterTask, deleteMasterTask, updateMasterTask, addMasterTask, reorderMasterTasks, agendaEvents, dashboardColumns, setDashboardColumns } = useDataStore();
 
   const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event;
-    if (!over) return;
-
-    const activeId = active.id as string;
-    const overId = over.id as string;
-
-    let activeContainerIndex = -1;
-    let overContainerIndex = -1;
-
-    const columns = dashboardColumns || [];
-    columns.forEach((col, index) => {
-      if (col.includes(activeId)) activeContainerIndex = index;
-      if (col.includes(overId) || `col-${index}` === overId) overContainerIndex = index;
-    });
-
-    if (
-      activeContainerIndex === -1 ||
-      overContainerIndex === -1 ||
-      activeContainerIndex === overContainerIndex
-    ) {
-      return;
-    }
-
-    const activeItems = dashboardColumns[activeContainerIndex];
-    const overItems = dashboardColumns[overContainerIndex];
-    const activeIndex = activeItems.indexOf(activeId);
-    let overIndex = overItems.indexOf(overId);
-
-    if (overId.startsWith('col-')) {
-      overIndex = overItems.length;
-    }
-
-    const newColumns = [...columns];
-    newColumns[activeContainerIndex] = [...activeItems];
-    newColumns[overContainerIndex] = [...overItems];
-
-    newColumns[activeContainerIndex].splice(activeIndex, 1);
-    newColumns[overContainerIndex].splice(overIndex, 0, activeId);
-
-    setDashboardColumns(newColumns);
+    // Disable cross-container state updates during drag to prevent infinite loop crashes
+    // The move will be finalized in handleDragEnd instead.
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -112,7 +74,10 @@ export default function Dashboard() {
       if (col.includes(overId) || `col-${index}` === overId) overContainerIndex = index;
     });
 
-    if (activeContainerIndex !== -1 && activeContainerIndex === overContainerIndex) {
+    if (activeContainerIndex === -1 || overContainerIndex === -1) return;
+
+    if (activeContainerIndex === overContainerIndex) {
+      // Same container reorder
       const items = columns[activeContainerIndex];
       const activeIndex = items.indexOf(activeId);
       const overIndex = items.indexOf(overId);
@@ -122,6 +87,25 @@ export default function Dashboard() {
         newColumns[activeContainerIndex] = arrayMove(items, activeIndex, overIndex);
         setDashboardColumns(newColumns);
       }
+    } else {
+      // Cross container move
+      const activeItems = columns[activeContainerIndex];
+      const overItems = columns[overContainerIndex];
+      const activeIndex = activeItems.indexOf(activeId);
+      let overIndex = overItems.indexOf(overId);
+
+      if (overId.startsWith('col-')) {
+        overIndex = overItems.length;
+      }
+
+      const newColumns = [...columns];
+      newColumns[activeContainerIndex] = [...activeItems];
+      newColumns[overContainerIndex] = [...overItems];
+
+      newColumns[activeContainerIndex].splice(activeIndex, 1);
+      newColumns[overContainerIndex].splice(overIndex, 0, activeId);
+
+      setDashboardColumns(newColumns);
     }
   };
 
