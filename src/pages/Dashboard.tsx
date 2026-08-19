@@ -52,7 +52,7 @@ function DroppableColumn({ id, items, renderItem }: { id: string, items: string[
 
 export default function Dashboard() {
   const { i18n } = useTranslation();
-  const { masterTasks, toggleMasterTask, deleteMasterTask, updateMasterTask, addMasterTask, reorderMasterTasks, agendaEvents, dashboardColumns, setDashboardColumns, checkDailyReset } = useDataStore();
+  const { masterTasks, toggleMasterTask, deleteMasterTask, updateMasterTask, addMasterTask, reorderMasterTasks, agendaEvents, dashboardColumns, setDashboardColumns, checkDailyReset, waterSteps } = useDataStore();
 
   useEffect(() => {
     checkDailyReset();
@@ -142,7 +142,14 @@ export default function Dashboard() {
 
   const allTasks = [...personalTasks, ...workTasks];
   const completedCount = allTasks.filter((t) => t.completed).length;
-  const overallProgress = allTasks.length > 0 ? Math.round((completedCount / allTasks.length) * 100) : 0;
+  
+  const waterItems = Object.values(waterSteps || {});
+  const completedWaterCount = waterItems.filter(Boolean).length;
+  
+  const totalItemsCount = allTasks.length + waterItems.length;
+  const totalCompletedCount = completedCount + completedWaterCount;
+
+  const overallProgress = totalItemsCount > 0 ? Math.round((totalCompletedCount / totalItemsCount) * 100) : 0;
 
   const renderCard = (id: string, dragProps: any) => {
     if (id === 'personal') {
