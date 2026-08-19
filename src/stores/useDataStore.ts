@@ -9,7 +9,7 @@ export interface MasterTask {
   title_pt: string;
   title_en?: string | null;
   category: 'personal' | 'work' | 'college' | 'church';
-  repeatType: 'weekday' | 'saturday' | 'sunday';
+  repeatType: 'weekday' | 'saturday' | 'sunday' | 'none';
   completed: boolean;
   time?: string;
   date?: string;
@@ -25,6 +25,7 @@ export interface AgendaEvent {
   notes?: string;
   link?: string;
   category: string;
+  completed?: boolean;
   subtopics?: { id: string; title_pt: string; title_en?: string | null; completed: boolean }[];
 }
 
@@ -34,6 +35,8 @@ interface DataState {
   waterSteps: Record<string, boolean>;
   dashboardColumns: string[][];
   reflectionText: string;
+  lastResetDate: string;
+  history: Array<{ id: string; date: string; completion: number; completedItems: number; totalItems: number }>;
   
   addMasterTask: (task: Omit<MasterTask, 'id' | 'completed'>) => void;
   toggleMasterTask: (id: string) => void;
@@ -44,6 +47,7 @@ interface DataState {
   addAgendaEvent: (event: Omit<AgendaEvent, 'id'>) => void;
   updateAgendaEvent: (id: string, updates: Partial<AgendaEvent>) => void;
   deleteAgendaEvent: (id: string) => void;
+  toggleAgendaEvent: (id: string) => void;
   addSubtopic: (eventId: string, title: string) => void;
   toggleSubtopic: (eventId: string, subtopicId: string) => void;
   deleteSubtopic: (eventId: string, subtopicId: string) => void;
@@ -51,6 +55,7 @@ interface DataState {
   toggleWaterStep: (id: string) => void;
   setDashboardColumns: (columns: string[][]) => void;
   setReflectionText: (text: string) => void;
+  checkDailyReset: () => void;
 }
 
 const supabaseStorage: StateStorage = {
@@ -143,6 +148,8 @@ export const useDataStore = create<DataState>()(
         ['church']
       ],
       reflectionText: '',
+      lastResetDate: new Date().toISOString().split('T')[0],
+      history: [],
 
       addMasterTask: (task) => {
         const id = Math.random().toString();
@@ -203,6 +210,10 @@ export const useDataStore = create<DataState>()(
 
       deleteAgendaEvent: (id) => set((state) => ({
         agendaEvents: state.agendaEvents.filter(e => e.id !== id)
+      })),
+
+      toggleAgendaEvent: (id) => set((state) => ({
+        agendaEvents: state.agendaEvents.map(e => e.id === id ? { ...e, completed: !e.completed } : e)
       })),
 
       updateAgendaEvent: (id, updates) => set((state) => {
@@ -266,6 +277,55 @@ export const useDataStore = create<DataState>()(
 
       setDashboardColumns: (columns) => set({ dashboardColumns: columns }),
       setReflectionText: (text) => set({ reflectionText: text }),
+      
+      checkDailyReset: () => {
+        const today = new Date().toISOString().split('T')[0];
+        set((state) => {
+          if (state.lastResetDate !== today) {
+            // Calculate yesterday's completion before resetting
+            let totalItems = 0;
+            let completedItems = 0;
+            
+            state.masterTasks.forEach(task => {
+              totalItems++;
+              if (task.completed) completedItems++;
+            });
+            
+            Object.values(state.waterSteps).forEach(step => {
+              totalItems++;
+              if (step) completedItems++;
+            });
+
+            const completion = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+            
+            const newHistoryItem = {
+              id: Math.random().toString(),
+              date: state.lastResetDate, // Save it as the date that just passed
+              completion,
+              completedItems,
+              totalItems
+            };
+
+            return {
+              lastResetDate: today,
+              history: [newHistoryItem, ...state.history].slice(0, 90), // Keep last 90 days
+              waterSteps: {
+                fill: false,
+                two_cups: false,
+                half: false,
+                full: false,
+              },
+              masterTasks: state.masterTasks
+                .filter(t => !(t.repeatType === 'none' && t.completed)) // Remove completed 'none' tasks
+                .map(t => ({
+                  ...t,
+                  completed: false // Uncheck all remaining tasks
+                }))
+            };
+          }
+          return state;
+        });
+      },
     }),
     {
       name: 'dayali-storage-v2',

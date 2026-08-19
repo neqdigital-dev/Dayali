@@ -1,17 +1,46 @@
 import { useState } from 'react';
 import { Calendar, CheckCircle2, Filter } from 'lucide-react';
+import { useDataStore } from '../stores/useDataStore';
 
 export default function History() {
   const [filter, setFilter] = useState('15'); // 15 dias por padrão
+  const { history } = useDataStore();
 
-  // Mocked daily history data showing general completion
-  const historyItems = [
-    { id: 1, date: 'Ontem', completion: 85, completedItems: 17, totalItems: 20 },
-    { id: 2, date: '16 de Agosto', completion: 100, completedItems: 18, totalItems: 18 },
-    { id: 3, date: '15 de Agosto', completion: 60, completedItems: 12, totalItems: 20 },
-    { id: 4, date: '14 de Agosto', completion: 90, completedItems: 18, totalItems: 20 },
-    { id: 5, date: '13 de Agosto', completion: 75, completedItems: 15, totalItems: 20 },
-  ];
+  const parseDate = (dateStr: string) => {
+    const parts = dateStr.split('-');
+    if (parts.length === 3) return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    return new Date(dateStr);
+  };
+
+  let filteredHistory = [...history];
+  const today = new Date();
+  
+  if (filter === '15') {
+    const minDate = new Date(today);
+    minDate.setDate(today.getDate() - 15);
+    filteredHistory = filteredHistory.filter(h => parseDate(h.date) >= minDate);
+  } else if (filter === '30') {
+    const minDate = new Date(today);
+    minDate.setDate(today.getDate() - 30);
+    filteredHistory = filteredHistory.filter(h => parseDate(h.date) >= minDate);
+  } else if (filter === 'quarter') {
+    const minDate = new Date(today);
+    minDate.setDate(today.getDate() - 90);
+    filteredHistory = filteredHistory.filter(h => parseDate(h.date) >= minDate);
+  }
+
+  // Format date correctly
+  const formatDate = (dateStr: string) => {
+    const d = parseDate(dateStr);
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    if (d.toDateString() === yesterday.toDateString()) return 'Ontem';
+    if (d.toDateString() === today.toDateString()) return 'Hoje';
+    
+    const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+    return `${d.getDate()} de ${months[d.getMonth()]}`;
+  };
 
   const getCompletionColor = (percentage: number) => {
     if (percentage === 100) return 'var(--color-success, #10b981)';
@@ -80,7 +109,11 @@ export default function History() {
       
       <div className="page-content" style={{ maxWidth: '600px', marginTop: 'var(--space-6)' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
-          {historyItems.map((item, index) => (
+          {filteredHistory.length === 0 ? (
+            <div style={{ padding: 'var(--space-6)', textAlign: 'center', color: 'var(--color-text-tertiary)', background: 'var(--color-bg-subtle)', borderRadius: 'var(--radius-md)' }}>
+              Nenhum histórico encontrado ainda. O sistema vai gravar seu desempenho automaticamente toda vez que o dia virar!
+            </div>
+          ) : filteredHistory.map((item, index) => (
             <div key={item.id} style={{ display: 'flex', gap: 'var(--space-4)' }}>
               {/* Timeline dot and line */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '20px' }}>
@@ -97,7 +130,7 @@ export default function History() {
                 }}>
                   <Calendar size={14} />
                 </div>
-                {index !== historyItems.length - 1 && (
+                {index !== filteredHistory.length - 1 && (
                   <div style={{ width: '2px', flex: 1, background: 'var(--color-border)', margin: '4px 0', minHeight: '30px' }} />
                 )}
               </div>
@@ -106,7 +139,7 @@ export default function History() {
               <div className="card" style={{ flex: 1, padding: 'var(--space-4)', marginBottom: 'var(--space-2)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <h4 style={{ fontWeight: 'var(--weight-semibold)', fontSize: 'var(--text-base)', margin: 0 }}>{item.date}</h4>
+                    <h4 style={{ fontWeight: 'var(--weight-semibold)', fontSize: 'var(--text-base)', margin: 0 }}>{formatDate(item.date)}</h4>
                     <span style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-tertiary)', marginTop: '4px', display: 'block' }}>
                       {item.completedItems} de {item.totalItems} itens concluídos gerais (Água, Igreja, Pessoal, etc.)
                     </span>

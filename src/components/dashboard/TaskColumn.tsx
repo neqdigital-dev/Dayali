@@ -24,7 +24,7 @@ interface TaskColumnProps {
   onToggleTask?: (id: string, completed: boolean) => void;
   onDeleteTask?: (id: string) => void;
   onUpdateTask?: (id: string, updates: Partial<TaskItem>) => void;
-  onAddSubmit?: (title: string) => void;
+  onAddSubmit?: (title: string, repeat: boolean) => void;
   onReorderTask?: (activeId: string, overId: string) => void;
   dragHandleProps?: any;
 }
@@ -161,6 +161,7 @@ export default function TaskColumn({ category, tasks: initialTasks, onToggleTask
   const [tasks, setTasks] = useState(initialTasks);
   const [isAdding, setIsAdding] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [repeatNewTask, setRepeatNewTask] = useState(false);
   const config = categoryConfig[category];
 
   useEffect(() => {
@@ -191,8 +192,9 @@ export default function TaskColumn({ category, tasks: initialTasks, onToggleTask
 
   const handleAddSubmit = () => {
     if (newTaskTitle.trim() && onAddSubmit) {
-      onAddSubmit(newTaskTitle.trim());
+      onAddSubmit(newTaskTitle.trim(), repeatNewTask);
       setNewTaskTitle('');
+      setRepeatNewTask(false);
       setIsAdding(false);
     }
   };
@@ -230,25 +232,36 @@ export default function TaskColumn({ category, tasks: initialTasks, onToggleTask
 
       <div className="task-column-list">
         {isAdding && (
-          <div className="task-item" style={{ padding: 'var(--space-2)' }}>
-            <div className="task-checkbox" style={{ opacity: 0.5, cursor: 'default' }} />
-            <input
-              type="text"
-              autoFocus
-              value={newTaskTitle}
-              onChange={(e) => setNewTaskTitle(e.target.value)}
-              onKeyDown={handleKeyDown}
-              onBlur={() => { if(newTaskTitle.trim() === '') setIsAdding(false); else handleAddSubmit(); }}
-              placeholder={t('actions.add', { ns: 'common' }) + '...'}
-              style={{
-                border: 'none',
-                background: 'transparent',
-                outline: 'none',
-                width: '100%',
-                fontSize: 'var(--text-sm)',
-                color: 'var(--color-text-primary)'
-              }}
-            />
+          <div className="task-item" style={{ padding: 'var(--space-2)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+              <div className="task-checkbox" style={{ opacity: 0.5, cursor: 'default' }} />
+              <input
+                type="text"
+                autoFocus
+                value={newTaskTitle}
+                onChange={(e) => setNewTaskTitle(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={t('actions.add', { ns: 'common' }) + '...'}
+                style={{
+                  border: 'none',
+                  background: 'transparent',
+                  outline: 'none',
+                  width: '100%',
+                  fontSize: 'var(--text-sm)',
+                  color: 'var(--color-text-primary)'
+                }}
+              />
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '28px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: 'var(--color-text-secondary)', cursor: 'pointer' }}>
+                <input type="checkbox" checked={repeatNewTask} onChange={(e) => setRepeatNewTask(e.target.checked)} />
+                Repetir toda semana?
+              </label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button className="btn btn-ghost btn-sm" style={{ fontSize: '10px', padding: '2px 6px' }} onClick={() => setIsAdding(false)}>Cancelar</button>
+                <button className="btn btn-primary btn-sm" style={{ fontSize: '10px', padding: '2px 6px' }} onClick={handleAddSubmit}>Adicionar</button>
+              </div>
+            </div>
           </div>
         )}
         {tasks.length === 0 && !isAdding ? (

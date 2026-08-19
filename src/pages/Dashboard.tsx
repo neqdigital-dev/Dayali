@@ -9,6 +9,7 @@ import CollegeCard from '../components/dashboard/CollegeCard';
 import ChurchCard from '../components/dashboard/ChurchCard';
 import AgendaPreview from '../components/dashboard/AgendaPreview';
 import { useTranslation } from 'react-i18next';
+import { useEffect } from 'react';
 
 function SortableCard({ id, render }: { id: string, render: (dragHandleProps: any) => React.ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
@@ -51,7 +52,11 @@ function DroppableColumn({ id, items, renderItem }: { id: string, items: string[
 
 export default function Dashboard() {
   const { i18n } = useTranslation();
-  const { masterTasks, toggleMasterTask, deleteMasterTask, updateMasterTask, addMasterTask, reorderMasterTasks, agendaEvents, dashboardColumns, setDashboardColumns } = useDataStore();
+  const { masterTasks, toggleMasterTask, deleteMasterTask, updateMasterTask, addMasterTask, reorderMasterTasks, agendaEvents, dashboardColumns, setDashboardColumns, checkDailyReset } = useDataStore();
+
+  useEffect(() => {
+    checkDailyReset();
+  }, [checkDailyReset]);
 
   const handleDragOver = (event: DragOverEvent) => {
     // Disable cross-container state updates during drag to prevent infinite loop crashes
@@ -128,8 +133,8 @@ export default function Dashboard() {
     .filter(t => t.category === 'work')
     .map(t => ({ id: t.id, title_pt: t.title_pt, title_en: t.title_en || t.title_pt, priority: 'normal' as const, completed: t.completed, time: t.time, date: t.date, notes: t.notes }));
 
-  const handleAddTask = (title: string, category: 'personal' | 'work') => {
-    addMasterTask({ title_pt: title, category, repeatType: todayType });
+  const handleAddTask = (title: string, category: 'personal' | 'work', repeat: boolean = false) => {
+    addMasterTask({ title_pt: title, category, repeatType: repeat ? todayType : 'none' });
   };
 
   const toggleTask = (id: string) => toggleMasterTask(id);
@@ -149,7 +154,7 @@ export default function Dashboard() {
           onToggleTask={toggleTask}
           onDeleteTask={handleDeleteTask}
           onUpdateTask={updateMasterTask}
-          onAddSubmit={(title) => handleAddTask(title, 'personal')}
+          onAddSubmit={(title, repeat) => handleAddTask(title, 'personal', repeat)}
           onReorderTask={reorderMasterTasks}
         />
       );
@@ -163,7 +168,7 @@ export default function Dashboard() {
           onToggleTask={toggleTask}
           onDeleteTask={handleDeleteTask}
           onUpdateTask={updateMasterTask}
-          onAddSubmit={(title) => handleAddTask(title, 'work')}
+          onAddSubmit={(title, repeat) => handleAddTask(title, 'work', repeat)}
           onReorderTask={reorderMasterTasks}
         />
       );

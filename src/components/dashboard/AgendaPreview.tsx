@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Calendar as CalendarIcon, ChevronRight, Plus, ChevronLeft, Trash2 } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronRight, Plus, ChevronLeft, Trash2, Check } from 'lucide-react';
 import { useDataStore } from '../../stores/useDataStore';
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
@@ -8,7 +8,7 @@ const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
 export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
   const { t, i18n } = useTranslation(['dashboard', 'common']);
-  const { addAgendaEvent, deleteAgendaEvent } = useDataStore();
+  const { addAgendaEvent, deleteAgendaEvent, toggleAgendaEvent } = useDataStore();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<'month' | 'week' | 'list'>('month');
   
@@ -37,11 +37,11 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
         const day = localDate.getDate().toString();
         if (!acc[day]) acc[day] = [];
         const displayTitle = i18n.language === 'en' && task.title_en ? task.title_en : task.title_pt || task.title;
-        acc[day].push({ id: task.id, title: displayTitle, type: task.category });
+        acc[day].push({ id: task.id, title: displayTitle, type: task.category, completed: task.completed });
       }
     }
     return acc;
-  }, {} as Record<string, { id?: string; title: string; type: string }[]>);
+  }, {} as Record<string, { id?: string; title: string; type: string; completed?: boolean }[]>);
 
   const handleDayAddSubmit = (dayNum: number) => {
     if (newEventTitle.trim()) {
@@ -175,9 +175,18 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       maxWidth: '100%',
-                      overflow: 'hidden'
+                      overflow: 'hidden',
+                      opacity: ev.completed ? 0.6 : 1
                     }}>
-                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }} title={ev.title}>{ev.title}</span>
+                      <div 
+                        onClick={() => toggleAgendaEvent(ev.id!)}
+                        style={{ cursor: 'pointer', flexShrink: 0, marginRight: '4px', width: '10px', height: '10px', borderRadius: '2px', border: `1px solid ${borderCol}`, background: ev.completed ? borderCol : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                      >
+                         {ev.completed && <Check size={8} color="white" />}
+                      </div>
+                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textDecoration: ev.completed ? 'line-through' : 'none', cursor: 'pointer' }} title={ev.title} onClick={() => toggleAgendaEvent(ev.id!)}>
+                        {ev.title}
+                      </span>
                       {ev.id && (
                         <button onClick={() => deleteAgendaEvent(ev.id!)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
                           <Trash2 size={10} color="var(--color-error)" />
@@ -280,9 +289,18 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
                         justifyContent: 'space-between',
                         alignItems: 'center',
                         maxWidth: '100%',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        opacity: ev.completed ? 0.6 : 1
                       }}>
-                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 }} title={ev.title}>{ev.title}</span>
+                        <div 
+                          onClick={() => toggleAgendaEvent(ev.id!)}
+                          style={{ cursor: 'pointer', flexShrink: 0, marginRight: '4px', width: '10px', height: '10px', borderRadius: '2px', border: `1px solid ${borderCol}`, background: ev.completed ? borderCol : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                           {ev.completed && <Check size={8} color="white" />}
+                        </div>
+                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textDecoration: ev.completed ? 'line-through' : 'none', cursor: 'pointer' }} title={ev.title} onClick={() => toggleAgendaEvent(ev.id!)}>
+                          {ev.title}
+                        </span>
                         {ev.id && (
                           <button onClick={() => deleteAgendaEvent(ev.id!)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
                             <Trash2 size={10} color="var(--color-error)" />
