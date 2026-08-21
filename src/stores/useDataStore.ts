@@ -82,12 +82,30 @@ const supabaseStorage: StateStorage = {
       
       cloudSyncReady = true;
       
-      // Se não tem backup na nuvem ainda, devolve o que tá no local
-      if (error || !data?.state_backup) {
+      const cloudBackup = data?.state_backup;
+      
+      if (localData) {
+        try {
+          const localParsed = JSON.parse(localData);
+          const localTasks = localParsed?.state?.masterTasks?.length || 0;
+          const cloudTasks = cloudBackup?.state?.masterTasks?.length || 0;
+
+          // Se o armazenamento local tiver mais tarefas que a nuvem (ex: nuvem foi apagada),
+          // assumimos o local como mais atualizado e forçamos o envio para a nuvem.
+          if (!cloudBackup || localTasks > cloudTasks) {
+            supabase.from('profiles').update({ state_backup: localParsed }).eq('id', user.id).then();
+            return localData;
+          }
+        } catch (e) {
+          console.error("Erro ao comparar dados", e);
+        }
+      }
+      
+      if (error || !cloudBackup) {
          return localData;
       }
       
-      return JSON.stringify(data.state_backup);
+      return JSON.stringify(cloudBackup);
     } catch (e) {
       console.error("Erro ao buscar dados da nuvem", e);
       return localData;
