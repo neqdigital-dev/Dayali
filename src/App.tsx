@@ -12,15 +12,22 @@ import History from './pages/History';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import { useAuthStore } from './stores/useAuthStore';
+import { useDataStore } from './stores/useDataStore';
 
 function App() {
-  const { initialized, initialize } = useAuthStore();
+  const { initialized, initialize, user } = useAuthStore();
 
   useEffect(() => {
     if (!initialized) {
       initialize();
     }
   }, [initialized, initialize]);
+
+  useEffect(() => {
+    if (user && user.id !== 'mock-user-id') {
+      useDataStore.persist.rehydrate();
+    }
+  }, [user]);
 
   return (
     <>

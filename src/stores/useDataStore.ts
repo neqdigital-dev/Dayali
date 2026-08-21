@@ -58,6 +58,8 @@ interface DataState {
   checkDailyReset: () => void;
 }
 
+let cloudSyncReady = false;
+
 const supabaseStorage: StateStorage = {
   getItem: async (name: string): Promise<string | null> => {
     // 1. Tenta recuperar do Local Storage primeiro (rápido e funciona offline)
@@ -66,6 +68,7 @@ const supabaseStorage: StateStorage = {
     // 2. Verifica se o usuário está logado no Supabase
     const user = useAuthStore.getState().user;
     if (!user || user.id === 'mock-user-id') {
+      cloudSyncReady = false;
       return localData;
     }
 
@@ -76,6 +79,8 @@ const supabaseStorage: StateStorage = {
         .select('state_backup')
         .eq('id', user.id)
         .single();
+      
+      cloudSyncReady = true;
       
       // Se não tem backup na nuvem ainda, devolve o que tá no local
       if (error || !data?.state_backup) {
@@ -95,6 +100,10 @@ const supabaseStorage: StateStorage = {
     // 2. Sincroniza em background com o Supabase
     const user = useAuthStore.getState().user;
     if (!user || user.id === 'mock-user-id') return;
+    
+    // Só envia para a nuvem se já tivermos carregado os dados da nuvem com sucesso
+    // Isso evita que um celular novo apague os dados do PC ao salvar o estado local vazio
+    if (!cloudSyncReady) return;
 
     try {
       const parsedValue = JSON.parse(value);

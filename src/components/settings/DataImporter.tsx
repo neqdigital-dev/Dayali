@@ -41,33 +41,61 @@ export default function DataImporter() {
     reader.readAsText(file);
   };
 
+  const handleExport = () => {
+    const data = localStorage.getItem('dayali-storage-v2');
+    if (!data) {
+      alert('Nenhum dado encontrado para exportar.');
+      return;
+    }
+    
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `dayali-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
-    <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <div>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', fontWeight: 'var(--weight-medium)', color: 'var(--color-text-primary)' }}>
-          <DownloadCloud size={16} />
-          Restaurar Backup (Nuvem/Local)
-        </span>
-        <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', margin: 0 }}>
-          Selecione o seu arquivo .json para recuperar todas as tarefas.
-        </p>
-      </div>
-      <div>
-        <input 
-          type="file" 
-          accept=".json" 
-          style={{ display: 'none' }} 
-          ref={fileInputRef} 
-          onChange={handleImport}
-        />
-        <button 
-          className="btn btn-outline" 
-          onClick={() => fileInputRef.current?.click()}
-          disabled={loading}
-        >
-          {loading ? 'Restaurando...' : 'Importar Arquivo'}
-        </button>
+    <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <span style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', fontWeight: 'var(--weight-medium)', color: 'var(--color-text-primary)' }}>
+            <DownloadCloud size={16} />
+            Backup Local (Exportar/Restaurar)
+          </span>
+          <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', margin: 0 }}>
+            Exporte ou importe seus dados para manter cópias de segurança.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 'var(--space-2)' }}>
+          <input 
+            type="file" 
+            accept=".json" 
+            style={{ display: 'none' }} 
+            ref={fileInputRef} 
+            onChange={handleImport}
+          />
+          <button 
+            className="btn btn-outline" 
+            onClick={handleExport}
+            disabled={loading}
+          >
+            Exportar
+          </button>
+          <button 
+            className="btn btn-primary" 
+            onClick={() => fileInputRef.current?.click()}
+            disabled={loading}
+          >
+            {loading ? 'Restaurando...' : 'Importar'}
+          </button>
+        </div>
       </div>
     </div>
   );
 }
+
