@@ -25,7 +25,7 @@ function App() {
 
   useEffect(() => {
     if (user && user.id !== 'mock-user-id') {
-      useDataStore.persist.rehydrate();
+      useDataStore.getState().forceSyncFromCloud();
     }
   }, [user]);
 

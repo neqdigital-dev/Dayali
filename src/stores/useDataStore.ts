@@ -56,6 +56,7 @@ interface DataState {
   setDashboardColumns: (columns: string[][]) => void;
   setReflectionText: (text: string) => void;
   checkDailyReset: () => void;
+  forceSyncFromCloud: () => Promise<void>;
 }
 
 let cloudSyncReady = false;
@@ -352,6 +353,30 @@ export const useDataStore = create<DataState>()(
           }
           return state;
         });
+      },
+
+      forceSyncFromCloud: async () => {
+        const user = useAuthStore.getState().user;
+        if (!user || user.id === 'mock-user-id') return;
+
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('state_backup')
+            .eq('id', user.id)
+            .single();
+
+          if (error || !data?.state_backup) return;
+
+          const cloudState = data.state_backup.state || data.state_backup;
+          
+          set((state) => ({
+             ...state,
+             ...cloudState
+          }));
+        } catch (e) {
+          console.error("Erro ao forçar sincronização", e);
+        }
       },
     }),
     {

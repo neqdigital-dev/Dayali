@@ -1,5 +1,6 @@
 import { useAppStore } from '../stores/useAppStore';
 import { useAuthStore } from '../stores/useAuthStore';
+import { useDataStore } from '../stores/useDataStore';
 import { User, Bell, Globe, Moon, Sun, Monitor, DownloadCloud, LogOut, Upload } from 'lucide-react';
 import DataImporter from '../components/settings/DataImporter';
 import { supabase } from '../lib/supabase';
@@ -167,6 +168,30 @@ export default function Settings() {
             <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
               <input type="checkbox" defaultChecked style={{ width: '16px', height: '16px' }} />
             </label>
+          </div>
+        </section>
+
+        {/* Sync Section */}
+        <section>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', marginBottom: 'var(--space-3)' }}>
+            <Globe size={18} style={{ color: 'var(--color-primary)' }} />
+            <h2 style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--weight-semibold)', margin: 0 }}>Sincronização</h2>
+          </div>
+          <div className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <span style={{ fontWeight: 'var(--weight-medium)' }}>Forçar Sincronização</span>
+              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-secondary)', margin: 0 }}>Baixar os dados mais recentes do banco de dados (Supabase).</p>
+            </div>
+            <button 
+              className="btn btn-primary" 
+              onClick={async () => {
+                await useDataStore.getState().forceSyncFromCloud();
+                alert('Sincronização concluída!');
+              }}
+              disabled={!user || user.id === 'mock-user-id'}
+            >
+              Baixar da Nuvem
+            </button>
           </div>
         </section>
 
