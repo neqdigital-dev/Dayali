@@ -153,16 +153,8 @@ const supabaseStorage: StateStorage = {
 export const useDataStore = create<DataState>()(
   persist(
     (set) => ({
-      masterTasks: [
-        { id: '1', title_pt: 'Tomar café da manhã', title_en: 'Have breakfast', category: 'personal', repeatType: 'weekday', completed: false },
-        { id: '2', title_pt: 'Ler livro', title_en: 'Read book', category: 'personal', repeatType: 'weekday', completed: false },
-        { id: '3', title_pt: 'Reunião Diária', title_en: 'Daily Meeting', category: 'work', repeatType: 'weekday', completed: false },
-        { id: '4', title_pt: 'Limpar a casa', title_en: 'Clean the house', category: 'personal', repeatType: 'saturday', completed: false },
-        { id: '5', title_pt: 'Culto', title_en: 'Church Service', category: 'church', repeatType: 'sunday', completed: false },
-      ],
-      agendaEvents: [
-        { id: '10', title_pt: 'Prova de Estruturas', title_en: 'Structures Exam', category: 'college', date: new Date().toISOString().split('T')[0], subtopics: [{ id: 's1', title_pt: 'Capítulo 4', title_en: 'Chapter 4', completed: false }] }
-      ],
+      masterTasks: [],
+      agendaEvents: [],
       waterSteps: {
         fill: false,
         two_cups: false,
