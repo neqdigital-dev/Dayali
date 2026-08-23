@@ -327,6 +327,7 @@ export const useDataStore = create<DataState>()(
 
             return {
               lastResetDate: today,
+              reflectionText: '', // Clear the reflection for the new day
               history: [newHistoryItem, ...state.history].slice(0, 90), // Keep last 90 days
               waterSteps: {
                 fill: false,
@@ -381,6 +382,8 @@ export const useDataStore = create<DataState>()(
                ...state,
                ...cloudState
             }));
+            // Como puxamos dados da nuvem que podem ser do dia anterior, devemos forçar a verificação de virada de dia
+            useDataStore.getState().checkDailyReset();
           }
         } catch (e) {
           console.error("Erro ao forçar sincronização", e);
