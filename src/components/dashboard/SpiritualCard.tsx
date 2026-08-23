@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 import { useDataStore } from '../../stores/useDataStore';
@@ -7,6 +8,9 @@ export default function SpiritualCard() {
   const isEn = i18n.language === 'en';
   const reflectionText = useDataStore((s) => s.reflectionText);
   const setReflectionText = useDataStore((s) => s.setReflectionText);
+  const reflectionTextEn = useDataStore((s) => s.reflectionTextEn);
+  const setReflectionTextEn = useDataStore((s) => s.setReflectionTextEn);
+  const [isTranslatingLocal, setIsTranslatingLocal] = useState(false);
 
   const headerText = isEn ? "Youth Sabbath School Lesson" : "Lição da Escola Sabatina Jovem";
   const verses = [
@@ -28,7 +32,22 @@ export default function SpiritualCard() {
   const verseRef = isEn ? dailyVerse.refEn : dailyVerse.refPt;
   
   const reflectionHeader = isEn ? "My Daily Reflection" : "Minha Reflexão do Dia";
-  const reflectionPlaceholder = isEn ? "Write your reflection on the text here..." : "Escreva aqui sua reflexão sobre o texto...";
+  const reflectionPlaceholder = isEn ? "Write your reflection on the text here (English version)..." : "Escreva aqui sua reflexão sobre o texto (versão em Português)...";
+
+  const handleTranslate = async () => {
+    if (!reflectionText) return;
+    setIsTranslatingLocal(true);
+    try {
+      const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(reflectionText)}&langpair=pt|en`);
+      const data = await res.json();
+      if (data?.responseData?.translatedText) {
+        setReflectionTextEn(data.responseData.translatedText);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setIsTranslatingLocal(false);
+  };
 
   return (
     <div className="spiritual-card animate-fade-in-up" style={{ padding: 'var(--space-6)', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
@@ -73,20 +92,51 @@ export default function SpiritualCard() {
           <span style={{ fontSize: '0.85rem', fontWeight: 'var(--weight-semibold)', color: 'var(--color-primary)' }}>
             {reflectionHeader}
           </span>
-          <textarea 
-            className="input" 
-            placeholder={reflectionPlaceholder} 
-            value={reflectionText || ''}
-            onChange={(e) => setReflectionText(e.target.value)}
-            style={{ 
-              width: '100%', 
-              minHeight: '120px', 
-              resize: 'vertical', 
-              background: 'transparent',
-              border: '1px dashed var(--color-border)',
-              padding: 'var(--space-3)'
-            }}
-          />
+          
+          {isEn ? (
+            <textarea 
+              className="input" 
+              placeholder={reflectionPlaceholder} 
+              value={reflectionTextEn || ''}
+              onChange={(e) => setReflectionTextEn(e.target.value)}
+              style={{ 
+                width: '100%', 
+                minHeight: '120px', 
+                resize: 'vertical', 
+                background: 'transparent',
+                border: '1px dashed var(--color-border)',
+                padding: 'var(--space-3)'
+              }}
+            />
+          ) : (
+            <>
+              <textarea 
+                className="input" 
+                placeholder={reflectionPlaceholder} 
+                value={reflectionText || ''}
+                onChange={(e) => setReflectionText(e.target.value)}
+                style={{ 
+                  width: '100%', 
+                  minHeight: '120px', 
+                  resize: 'vertical', 
+                  background: 'transparent',
+                  border: '1px dashed var(--color-border)',
+                  padding: 'var(--space-3)'
+                }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px' }}>
+                <button 
+                  onClick={handleTranslate}
+                  disabled={isTranslatingLocal || !reflectionText}
+                  className="btn btn-ghost btn-sm"
+                  style={{ fontSize: '11px', opacity: 0.8, display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px' }}
+                >
+                  <Sparkles size={12} />
+                  {isTranslatingLocal ? 'Traduzindo...' : '✨ Traduzir para Inglês'}
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
       </div>

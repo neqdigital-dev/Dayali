@@ -55,6 +55,7 @@ interface DataState {
   toggleWaterStep: (id: string) => void;
   setDashboardColumns: (columns: string[][]) => void;
   setReflectionText: (text: string) => void;
+  setReflectionTextEn: (text: string) => void;
   checkDailyReset: () => void;
   forceSyncFromCloud: () => Promise<void>;
 }
@@ -167,6 +168,7 @@ export const useDataStore = create<DataState>()(
         ['church']
       ],
       reflectionText: '',
+      reflectionTextEn: '',
       lastResetDate: new Date().toISOString().split('T')[0],
       history: [],
 
@@ -296,6 +298,7 @@ export const useDataStore = create<DataState>()(
 
       setDashboardColumns: (columns) => set({ dashboardColumns: columns }),
       setReflectionText: (text) => set({ reflectionText: text }),
+      setReflectionTextEn: (text) => set({ reflectionTextEn: text }),
       
       checkDailyReset: () => {
         const today = new Date().toISOString().split('T')[0];
@@ -328,6 +331,7 @@ export const useDataStore = create<DataState>()(
             return {
               lastResetDate: today,
               reflectionText: '', // Clear the reflection for the new day
+              reflectionTextEn: '', // Clear the english reflection too
               history: [newHistoryItem, ...state.history].slice(0, 90), // Keep last 90 days
               waterSteps: {
                 fill: false,
