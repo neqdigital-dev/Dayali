@@ -78,6 +78,8 @@ ul, ol {
 
   /* === Surfaces === */
   --color-bg: hsl(225, 18%, 97%);
+  --color-bg-base: hsl(0, 0%, 100%);
+  --color-bg-subtle: hsl(220, 14%, 96%);
   --color-surface: hsl(0, 0%, 100%);
   --color-surface-hover: hsl(220, 14%, 98%);
   --color-surface-elevated: hsl(0, 0%, 100%);
@@ -221,6 +223,8 @@ ul, ol {
   --color-primary-ghost: hsl(220, 60%, 62%, 0.10);
 
   --color-bg: hsl(224, 20%, 7%);
+  --color-bg-base: hsl(224, 16%, 11%);
+  --color-bg-subtle: hsl(224, 16%, 15%);
   --color-surface: hsl(224, 16%, 11%);
   --color-surface-hover: hsl(224, 16%, 14%);
   --color-surface-elevated: hsl(224, 14%, 15%);

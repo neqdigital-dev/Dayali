@@ -37,7 +37,7 @@ const categoryConfig: Record<Category, { iconBg: string; label: string }> = {
 };
 
 function SortableTask({ task, onToggleTask, onDeleteTask, onUpdateTask }: { task: TaskItem; onToggleTask?: (id: string, c: boolean) => void; onDeleteTask?: (id: string) => void; onUpdateTask?: (id: string, u: Partial<TaskItem>) => void }) {
-  const { i18n } = useTranslation(['dashboard', 'common']);
+  const { t, i18n } = useTranslation(['dashboard', 'common']);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id });
   const [isEditing, setIsEditing] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -59,11 +59,12 @@ function SortableTask({ task, onToggleTask, onDeleteTask, onUpdateTask }: { task
   };
 
   const handleSaveSettings = () => {
-    onUpdateTask?.(task.id, { time: editTime, date: editDate, notes: editNotes });
+    onUpdateTask?.(task.id, { time: editTime, date: editDate, notes: editNotes, title_pt: editTitle.trim() || task.title_pt });
     setIsEditing(false);
+    setIsEditingTitle(false);
   };
 
-  const handleSaveTitle = () => {
+  const handleSaveTitleInline = () => {
     if (editTitle.trim() && editTitle !== task.title_pt) {
       onUpdateTask?.(task.id, { title_pt: editTitle.trim() });
     }
@@ -71,88 +72,158 @@ function SortableTask({ task, onToggleTask, onDeleteTask, onUpdateTask }: { task
   };
 
   return (
-    <motion.div
-      ref={setNodeRef}
-      style={style}
-      layout
-      className={`task-item ${task.completed ? 'completed' : ''}`}
-    >
-      <div 
-        {...attributes} 
-        {...listeners}
-        style={{ cursor: 'grab', display: 'flex', alignItems: 'center', opacity: 0.3, paddingRight: 'var(--space-2)' }}
+    <>
+      <motion.div
+        ref={setNodeRef}
+        style={style}
+        layout
+        className={`task-item ${task.completed ? 'completed' : ''}`}
       >
-        <GripVertical size={16} />
-      </div>
+        <div 
+          {...attributes} 
+          {...listeners}
+          style={{ cursor: 'grab', display: 'flex', alignItems: 'center', opacity: 0.3, paddingRight: 'var(--space-2)' }}
+        >
+          <GripVertical size={16} />
+        </div>
 
-      <div 
-        className={`task-checkbox ${task.completed ? 'checked' : ''}`}
-        onClick={() => onToggleTask?.(task.id, task.completed)}
-      >
-        {task.completed && <Check size={14} />}
-      </div>
+        <div 
+          className={`task-checkbox ${task.completed ? 'checked' : ''}`}
+          onClick={() => onToggleTask?.(task.id, task.completed)}
+        >
+          {task.completed && <Check size={14} />}
+        </div>
 
-      <div className="task-content" style={{ flex: 1, cursor: 'pointer' }} onClick={() => { if(!isEditingTitle) setIsEditing(!isEditing); }}>
-        {isEditingTitle ? (
-          <input
-            autoFocus
-            type="text"
-            value={editTitle}
-            onChange={(e) => setEditTitle(e.target.value)}
-            onBlur={handleSaveTitle}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleSaveTitle();
-              if (e.key === 'Escape') { setEditTitle(task.title_pt); setIsEditingTitle(false); }
-            }}
-            onClick={(e) => e.stopPropagation()}
-            style={{ width: '100%', fontSize: 'var(--text-sm)', border: 'none', background: 'transparent', outline: 'none', color: 'var(--color-text-primary)' }}
-          />
-        ) : (
-          <span 
-            className="task-title" 
-            style={{ textDecoration: task.completed ? 'line-through' : 'none' }}
-            onClick={(e) => { e.stopPropagation(); setIsEditingTitle(true); setEditTitle(task.title_pt); }}
-          >
-            {displayTitle}
-          </span>
-        )}
-        
-        {task.priority === 'high' && (
-          <span className="badge badge-error" style={{ marginLeft: 'var(--space-2)', fontSize: 'var(--text-xs)' }}>
-            High
-          </span>
-        )}
-        {(task.time || task.date || task.notes) && !isEditing && (
-          <div style={{ display: 'flex', gap: '4px', marginTop: '2px', flexWrap: 'wrap' }}>
-            {task.time && <span className="badge" style={{ background: 'var(--color-bg-subtle)', fontSize: '9px' }}>{task.time}</span>}
-            {task.date && <span className="badge" style={{ background: 'var(--color-bg-subtle)', fontSize: '9px' }}>{task.date.split('-').reverse().join('/')}</span>}
-            {task.notes && <span className="badge" style={{ background: 'var(--color-bg-subtle)', fontSize: '9px', maxWidth: '100px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{task.notes}</span>}
-          </div>
-        )}
-        
-        {isEditing && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: 'var(--space-2)' }} onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', gap: '4px' }}>
-              <input type="time" value={editTime} onChange={e => setEditTime(e.target.value)} style={{ fontSize: '10px', padding: '2px', border: '1px solid var(--color-border)', borderRadius: '2px', background: 'transparent', color: 'var(--color-text-primary)' }} />
-              <input type="date" value={editDate} onChange={e => setEditDate(e.target.value)} style={{ fontSize: '10px', padding: '2px', border: '1px solid var(--color-border)', borderRadius: '2px', background: 'transparent', color: 'var(--color-text-primary)' }} />
-            </div>
-            <textarea 
-              value={editNotes} 
-              onChange={e => setEditNotes(e.target.value)}
-              placeholder="Observações..."
-              style={{ fontSize: '10px', padding: '4px', border: '1px solid var(--color-border)', borderRadius: '4px', background: 'var(--color-bg-subtle)', color: 'var(--color-text-primary)', width: '100%', minHeight: '40px', resize: 'vertical' }}
+        <div className="task-content" style={{ flex: 1, cursor: 'pointer' }} onClick={() => { if(!isEditingTitle) setIsEditing(true); }}>
+          {isEditingTitle ? (
+            <input
+              autoFocus
+              type="text"
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              onBlur={handleSaveTitleInline}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleSaveTitleInline();
+                if (e.key === 'Escape') { setEditTitle(task.title_pt); setIsEditingTitle(false); }
+              }}
+              onClick={(e) => e.stopPropagation()}
+              style={{ width: '100%', fontSize: 'var(--text-sm)', border: 'none', background: 'transparent', outline: 'none', color: 'var(--color-text-primary)' }}
             />
-            <button className="btn btn-primary btn-sm" style={{ fontSize: '9px', padding: '2px 8px', alignSelf: 'flex-start' }} onClick={handleSaveSettings}>Salvar Detalhes</button>
-          </div>
-        )}
-      </div>
+          ) : (
+            <span 
+              className="task-title" 
+              style={{ textDecoration: task.completed ? 'line-through' : 'none' }}
+              onClick={(e) => { e.stopPropagation(); setIsEditingTitle(true); setEditTitle(task.title_pt); }}
+            >
+              {displayTitle}
+            </span>
+          )}
+          
+          {task.priority === 'high' && (
+            <span className="badge badge-error" style={{ marginLeft: 'var(--space-2)', fontSize: 'var(--text-xs)' }}>
+              High
+            </span>
+          )}
+          {(task.time || task.date || task.notes) && (
+            <div style={{ display: 'flex', gap: '4px', marginTop: '4px', flexWrap: 'wrap' }}>
+              {task.time && <span className="badge" style={{ background: 'var(--color-bg-subtle)', fontSize: '9px' }}>{task.time}</span>}
+              {task.date && <span className="badge" style={{ background: 'var(--color-bg-subtle)', fontSize: '9px' }}>{task.date.split('-').reverse().join('/')}</span>}
+              {task.notes && <span className="badge" style={{ background: 'var(--color-bg-subtle)', fontSize: '9px', maxWidth: '100px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{task.notes}</span>}
+            </div>
+          )}
+        </div>
 
-      <div className="task-actions" style={{ display: 'flex', gap: '8px' }}>
-        <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => onDeleteTask?.(task.id)}>
-          <Trash2 size={16} color="var(--color-error)" />
-        </button>
-      </div>
-    </motion.div>
+        <div className="task-actions" style={{ display: 'flex', gap: '8px' }}>
+          <button className="btn-icon" style={{ width: 28, height: 28 }} onClick={() => onDeleteTask?.(task.id)}>
+            <Trash2 size={16} color="var(--color-error)" />
+          </button>
+        </div>
+      </motion.div>
+
+      {/* MODAL DE EDIÇÃO DE TAREFA */}
+      {isEditing && (
+        <div 
+          onClick={() => setIsEditing(false)}
+          style={{
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0, 0, 0, 0.6)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: 'var(--space-4)'
+          }}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="card"
+            style={{
+              width: '100%',
+              maxWidth: '400px',
+              background: 'var(--color-bg-base)',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 'var(--space-4)'
+            }}
+          >
+            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 'bold' }}>Editar Tarefa</h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+              <label style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Título</label>
+              <input 
+                type="text" 
+                value={editTitle} 
+                onChange={e => setEditTitle(e.target.value)} 
+                className="input" 
+                style={{ padding: '8px', border: '1px solid var(--color-border)', borderRadius: '6px', background: 'transparent' }} 
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+                <label style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Horário</label>
+                <input 
+                  type="time" 
+                  value={editTime} 
+                  onChange={e => setEditTime(e.target.value)} 
+                  className="input" 
+                  style={{ padding: '8px', border: '1px solid var(--color-border)', borderRadius: '6px', background: 'transparent' }} 
+                />
+              </div>
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+                <label style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Data</label>
+                <input 
+                  type="date" 
+                  value={editDate} 
+                  onChange={e => setEditDate(e.target.value)} 
+                  className="input" 
+                  style={{ padding: '8px', border: '1px solid var(--color-border)', borderRadius: '6px', background: 'transparent' }} 
+                />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+              <label style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>Observações</label>
+              <textarea 
+                value={editNotes} 
+                onChange={e => setEditNotes(e.target.value)}
+                placeholder="Anotações..."
+                className="input"
+                style={{ padding: '8px', border: '1px solid var(--color-border)', borderRadius: '6px', background: 'var(--color-bg-subtle)', minHeight: '80px', resize: 'vertical' }}
+              />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '8px' }}>
+              <button className="btn btn-ghost" onClick={() => setIsEditing(false)}>Cancelar</button>
+              <button className="btn btn-primary" onClick={handleSaveSettings}>Salvar</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

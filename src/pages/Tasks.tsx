@@ -22,11 +22,35 @@ export default function Tasks() {
     .filter(t => t.category === 'church')
     .map(t => ({ id: t.id, title_pt: t.title_pt, title_en: t.title_en || t.title_pt, priority: 'normal' as const, completed: t.completed, time: t.time, date: t.date, notes: t.notes }));
 
+  const handleGlobalAdd = (title: string, category: string, currentTab: Tab) => {
+    addMasterTask({ title_pt: title, category, repeatType: currentTab });
+    if (currentTab === 'weekday') {
+      addMasterTask({ title_pt: title, category, repeatType: 'saturday' });
+      addMasterTask({ title_pt: title, category, repeatType: 'sunday' });
+    }
+  };
+
+  const handleCopyWeekdaysToWeekends = () => {
+    if (window.confirm("Isso vai copiar todas as suas tarefas de Segunda a Sexta para o Sábado e Domingo. Deseja continuar?")) {
+      const weekdayTasks = masterTasks.filter(t => t.repeatType === 'weekday');
+      weekdayTasks.forEach(task => {
+        addMasterTask({ title_pt: task.title_pt, category: task.category, repeatType: 'saturday' });
+        addMasterTask({ title_pt: task.title_pt, category: task.category, repeatType: 'sunday' });
+      });
+      alert("Tarefas copiadas com sucesso! Vá para as abas de Sábado e Domingo para limpar o que não quiser.");
+    }
+  };
+
   return (
     <div className="page-container">
-      <header className="page-header">
-        <h1 className="page-title">Tarefas (Configuração Mestre)</h1>
-        <p className="page-description">Gerencie a repetição das suas tarefas. O Dashboard lerá esta configuração para saber o que exibir hoje.</p>
+      <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h1 className="page-title">Tarefas (Configuração Mestre)</h1>
+          <p className="page-description">Gerencie a repetição das suas tarefas. O Dashboard lerá esta configuração para saber o que exibir hoje.</p>
+        </div>
+        <button className="btn btn-outline btn-sm" onClick={handleCopyWeekdaysToWeekends}>
+          Copiar de Seg-Sex para Sáb/Dom
+        </button>
       </header>
 
       <div style={{ display: 'flex', gap: '8px', marginBottom: 'var(--space-4)', background: 'var(--color-bg-subtle)', padding: '4px', borderRadius: 'var(--radius-md)', width: 'fit-content' }}>
@@ -58,9 +82,7 @@ export default function Tasks() {
             onToggleTask={(id) => toggleMasterTask(id)}
             onDeleteTask={(id) => deleteMasterTask(id)}
             onUpdateTask={updateMasterTask}
-            onAddSubmit={(title) => {
-              addMasterTask({ title_pt: title, category: 'personal', repeatType: activeTab });
-            }}
+            onAddSubmit={(title) => handleGlobalAdd(title, 'personal', activeTab)}
           />
           <TaskColumn 
             category="work" 
@@ -68,9 +90,7 @@ export default function Tasks() {
             onToggleTask={(id) => toggleMasterTask(id)}
             onDeleteTask={(id) => deleteMasterTask(id)}
             onUpdateTask={updateMasterTask}
-            onAddSubmit={(title) => {
-              addMasterTask({ title_pt: title, category: 'work', repeatType: activeTab });
-            }}
+            onAddSubmit={(title) => handleGlobalAdd(title, 'work', activeTab)}
           />
           {(activeTab === 'saturday' || activeTab === 'sunday') && (
             <TaskColumn 
@@ -79,9 +99,7 @@ export default function Tasks() {
               onToggleTask={(id) => toggleMasterTask(id)}
               onDeleteTask={(id) => deleteMasterTask(id)}
               onUpdateTask={updateMasterTask}
-              onAddSubmit={(title) => {
-                addMasterTask({ title_pt: title, category: 'church', repeatType: activeTab });
-              }}
+              onAddSubmit={(title) => handleGlobalAdd(title, 'church', activeTab)}
             />
           )}
         </div>
