@@ -366,14 +366,31 @@ export const useDataStore = create<DataState>()(
             .eq('id', user.id)
             .single();
 
-          if (error || !data?.state_backup) return;
+          // Marcamos que a comunicação com a nuvem foi feita, permitindo que alterações futuras sejam salvas
+          cloudSyncReady = true;
 
-          const cloudState = data.state_backup.state || data.state_backup;
+          const cloudState = data?.state_backup?.state || data?.state_backup;
           
-          set((state) => ({
-             ...state,
-             ...cloudState
-          }));
+          // Pegamos o estado atual (local) que já foi carregado
+          const localState = useDataStore.getState();
+          const localTasks = localState.masterTasks?.length || 0;
+          const cloudTasks = cloudState?.masterTasks?.length || 0;
+
+          // Se a nuvem estiver vazia ou tiver menos tarefas que o armazenamento local,
+          // o armazenamento local (PC) é o verdadeiro e deve ser enviado para a nuvem!
+          if (!data?.state_backup || localTasks > cloudTasks) {
+            const payload = { state: localState, version: 0 };
+            await supabase.from('profiles').update({ state_backup: payload }).eq('id', user.id);
+            return;
+          }
+
+          // Caso contrário, a nuvem está correta, então atualizamos a tela com os dados da nuvem
+          if (cloudState) {
+            set((state) => ({
+               ...state,
+               ...cloudState
+            }));
+          }
         } catch (e) {
           console.error("Erro ao forçar sincronização", e);
         }
