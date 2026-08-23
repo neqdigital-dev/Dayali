@@ -128,8 +128,7 @@ const supabaseStorage: StateStorage = {
       const parsedValue = JSON.parse(value);
       await supabase
         .from('profiles')
-        .update({ state_backup: parsedValue })
-        .eq('id', user.id);
+        .upsert({ id: user.id, state_backup: parsedValue });
     } catch (e) {
       console.error("Erro ao sincronizar com as nuvens", e);
     }
@@ -371,8 +370,8 @@ export const useDataStore = create<DataState>()(
           // Se a nuvem estiver vazia ou tiver menos tarefas que o armazenamento local,
           // o armazenamento local (PC) é o verdadeiro e deve ser enviado para a nuvem!
           if (!data?.state_backup || localTasks > cloudTasks) {
-            const payload = { state: localState, version: 0 };
-            await supabase.from('profiles').update({ state_backup: payload }).eq('id', user.id);
+            const payload = { id: user.id, state_backup: { state: localState, version: 0 } };
+            await supabase.from('profiles').upsert(payload);
             return;
           }
 

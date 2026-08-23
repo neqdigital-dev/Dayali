@@ -25,8 +25,7 @@ export default function DataImporter() {
         if (user && user.id !== 'mock-user-id') {
           await supabase
             .from('profiles')
-            .update({ state_backup: json })
-            .eq('id', user.id);
+            .upsert({ id: user.id, state_backup: json });
         }
 
         alert('Backup importado com sucesso! A página será recarregada para aplicar os dados.');
