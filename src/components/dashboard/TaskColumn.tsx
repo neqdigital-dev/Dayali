@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'motion/react';
 import { Plus, GripVertical, Check, Trash2 } from 'lucide-react';
@@ -141,7 +142,7 @@ function SortableTask({ task, onToggleTask, onDeleteTask, onUpdateTask }: { task
       </motion.div>
 
       {/* MODAL DE EDIÇÃO DE TAREFA */}
-      {isEditing && (
+      {isEditing && typeof document !== 'undefined' ? createPortal(
         <div 
           onClick={() => setIsEditing(false)}
           style={{
@@ -221,8 +222,9 @@ function SortableTask({ task, onToggleTask, onDeleteTask, onUpdateTask }: { task
               <button className="btn btn-primary" onClick={handleSaveSettings}>Salvar</button>
             </div>
           </div>
-        </div>
-      )}
+        </div>,
+        document.body
+      ) : null}
     </>
   );
 }
