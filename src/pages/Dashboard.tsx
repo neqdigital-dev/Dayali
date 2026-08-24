@@ -138,7 +138,7 @@ export default function Dashboard() {
   };
 
   const toggleTask = (id: string) => toggleMasterTask(id);
-  const handleDeleteTask = (id: string) => deleteMasterTask(id);
+  const handleDeleteTask = (id: string) => { if(window.confirm('Tem certeza que deseja excluir?')) deleteMasterTask(id); };
 
   const allTasks = [...personalTasks, ...workTasks];
   const completedCount = allTasks.filter((t) => t.completed).length;

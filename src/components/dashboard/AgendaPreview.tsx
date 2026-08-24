@@ -200,7 +200,7 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
                         {ev.title}
                       </span>
                       {ev.id && (
-                        <button onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? deleteMasterTask(ev.id!) : deleteAgendaEvent(ev.id!); }} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
+                        <button onClick={(e) => { e.stopPropagation(); if(window.confirm('Tem certeza que deseja excluir?')) { ev.isMasterTask ? deleteMasterTask(ev.id!) : deleteAgendaEvent(ev.id!); } }} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
                           <Trash2 size={10} color="var(--color-error)" />
                         </button>
                       )}
@@ -315,7 +315,7 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
                           {ev.title}
                         </span>
                         {ev.id && (
-                          <button onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? deleteMasterTask(ev.id!) : deleteAgendaEvent(ev.id!); }} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
+                          <button onClick={(e) => { e.stopPropagation(); if(window.confirm('Tem certeza que deseja excluir?')) { ev.isMasterTask ? deleteMasterTask(ev.id!) : deleteAgendaEvent(ev.id!); } }} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
                             <Trash2 size={10} color="var(--color-error)" />
                           </button>
                         )}
@@ -401,7 +401,7 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
                     {ev.title}
                   </span>
                   {ev.id && (
-                    <button onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? deleteMasterTask(ev.id!) : deleteAgendaEvent(ev.id!); setViewingDayEvents({ ...viewingDayEvents, events: viewingDayEvents.events.filter(e => e.id !== ev.id) }); }} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: 'var(--space-2)' }}>
+                    <button onClick={(e) => { e.stopPropagation(); if(window.confirm('Tem certeza que deseja excluir?')) { ev.isMasterTask ? deleteMasterTask(ev.id!) : deleteAgendaEvent(ev.id!); setViewingDayEvents({ ...viewingDayEvents, events: viewingDayEvents.events.filter(e => e.id !== ev.id) }); } }} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: 'var(--space-2)' }}>
                       <Trash2 size={16} color="var(--color-error)" />
                     </button>
                   )}

@@ -134,7 +134,7 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
                 <button className="btn-icon" onClick={() => setAddingSubtopicTo(event.id)} style={{ width: 28, height: 28 }}>
                   <Plus size={16} />
                 </button>
-                <button className="btn-icon" onClick={() => deleteAgendaEvent(event.id)} style={{ width: 28, height: 28 }}>
+                <button className="btn-icon" onClick={() => { if(window.confirm('Tem certeza que deseja excluir?')) deleteAgendaEvent(event.id!); }} style={{ width: 28, height: 28 }}>
                   <Trash2 size={16} color="var(--color-error)" />
                 </button>
               </div>

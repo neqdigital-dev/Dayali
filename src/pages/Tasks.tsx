@@ -80,7 +80,7 @@ export default function Tasks() {
             category="personal" 
             tasks={personalTasks} 
             onToggleTask={(id) => toggleMasterTask(id)}
-            onDeleteTask={(id) => deleteMasterTask(id)}
+            onDeleteTask={(id) => { if(window.confirm('Tem certeza que deseja excluir?')) deleteMasterTask(id); }}
             onUpdateTask={updateMasterTask}
             onAddSubmit={(title) => handleGlobalAdd(title, 'personal', activeTab)}
           />
@@ -88,7 +88,7 @@ export default function Tasks() {
             category="work" 
             tasks={workTasks} 
             onToggleTask={(id) => toggleMasterTask(id)}
-            onDeleteTask={(id) => deleteMasterTask(id)}
+            onDeleteTask={(id) => { if(window.confirm('Tem certeza que deseja excluir?')) deleteMasterTask(id); }}
             onUpdateTask={updateMasterTask}
             onAddSubmit={(title) => handleGlobalAdd(title, 'work', activeTab)}
           />
@@ -97,7 +97,7 @@ export default function Tasks() {
               category="church" 
               tasks={churchTasks} 
               onToggleTask={(id) => toggleMasterTask(id)}
-              onDeleteTask={(id) => deleteMasterTask(id)}
+              onDeleteTask={(id) => { if(window.confirm('Tem certeza que deseja excluir?')) deleteMasterTask(id); }}
               onUpdateTask={updateMasterTask}
               onAddSubmit={(title) => handleGlobalAdd(title, 'church', activeTab)}
             />
