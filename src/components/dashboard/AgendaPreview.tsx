@@ -6,9 +6,9 @@ import { useDataStore } from '../../stores/useDataStore';
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
 
-export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
+export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] }) {
   const { t, i18n } = useTranslation(['dashboard', 'common']);
-  const { addAgendaEvent, deleteAgendaEvent, toggleAgendaEvent } = useDataStore();
+  const { masterTasks, agendaEvents, addAgendaEvent, deleteAgendaEvent, toggleAgendaEvent, addMasterTask, toggleMasterTask, deleteMasterTask } = useDataStore();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<'month' | 'week' | 'list'>('month');
   
@@ -28,7 +28,12 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
   const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
   const monthLabel = `${monthNames[month]} de ${year}`;
 
-  const taskEvents = tasks.reduce((acc, task) => {
+  const allItems = [
+    ...agendaEvents.map(e => ({ ...e, isMasterTask: false, title: e.title_pt })),
+    ...masterTasks.filter(t => t.date).map(t => ({ ...t, isMasterTask: true, title: t.title_pt }))
+  ];
+
+  const taskEvents = allItems.reduce((acc, task) => {
     if (task.date) {
       const taskDate = new Date(task.date);
       // Ajuste simples de timezone para pegar o dia exato da string YYYY-MM-DD
@@ -37,16 +42,20 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
         const day = localDate.getDate().toString();
         if (!acc[day]) acc[day] = [];
         const displayTitle = i18n.language === 'en' && task.title_en ? task.title_en : task.title_pt || task.title;
-        acc[day].push({ id: task.id, title: displayTitle, type: task.category, completed: task.completed });
+        acc[day].push({ id: task.id, title: displayTitle, type: task.category, completed: task.completed, isMasterTask: task.isMasterTask });
       }
     }
     return acc;
-  }, {} as Record<string, { id?: string; title: string; type: string; completed?: boolean }[]>);
+  }, {} as Record<string, { id?: string; title: string; type: string; completed?: boolean; isMasterTask?: boolean }[]>);
 
   const handleDayAddSubmit = (dayNum: number) => {
     if (newEventTitle.trim()) {
       const dateStr = new Date(year, month, dayNum, 12).toISOString().split('T')[0];
-      addAgendaEvent({ title_pt: newEventTitle.trim(), category: newEventCategory, date: dateStr, subtopics: [] });
+      if (newEventCategory === 'personal' || newEventCategory === 'work') {
+        addMasterTask({ title_pt: newEventTitle.trim(), category: newEventCategory as 'personal' | 'work', repeatType: 'none', date: dateStr, completed: false });
+      } else {
+        addAgendaEvent({ title_pt: newEventTitle.trim(), category: newEventCategory, date: dateStr, subtopics: [] });
+      }
       setNewEventTitle('');
       setAddingEventToDay(null);
     }
@@ -179,16 +188,16 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
                       opacity: ev.completed ? 0.6 : 1
                     }}>
                       <div 
-                        onClick={() => toggleAgendaEvent(ev.id!)}
+                        onClick={() => ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!)}
                         style={{ cursor: 'pointer', flexShrink: 0, marginRight: '4px', width: '10px', height: '10px', borderRadius: '2px', border: `1px solid ${borderCol}`, background: ev.completed ? borderCol : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                       >
                          {ev.completed && <Check size={8} color="white" />}
                       </div>
-                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textDecoration: ev.completed ? 'line-through' : 'none', cursor: 'pointer' }} title={ev.title} onClick={() => toggleAgendaEvent(ev.id!)}>
+                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textDecoration: ev.completed ? 'line-through' : 'none', cursor: 'pointer' }} title={ev.title} onClick={() => ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!)}>
                         {ev.title}
                       </span>
                       {ev.id && (
-                        <button onClick={() => deleteAgendaEvent(ev.id!)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
+                        <button onClick={() => ev.isMasterTask ? deleteMasterTask(ev.id!) : deleteAgendaEvent(ev.id!)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
                           <Trash2 size={10} color="var(--color-error)" />
                         </button>
                       )}
@@ -293,16 +302,16 @@ export default function AgendaPreview({ tasks = [] }: { tasks?: any[] }) {
                         opacity: ev.completed ? 0.6 : 1
                       }}>
                         <div 
-                          onClick={() => toggleAgendaEvent(ev.id!)}
+                          onClick={() => ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!)}
                           style={{ cursor: 'pointer', flexShrink: 0, marginRight: '4px', width: '10px', height: '10px', borderRadius: '2px', border: `1px solid ${borderCol}`, background: ev.completed ? borderCol : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         >
                            {ev.completed && <Check size={8} color="white" />}
                         </div>
-                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textDecoration: ev.completed ? 'line-through' : 'none', cursor: 'pointer' }} title={ev.title} onClick={() => toggleAgendaEvent(ev.id!)}>
+                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textDecoration: ev.completed ? 'line-through' : 'none', cursor: 'pointer' }} title={ev.title} onClick={() => ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!)}>
                           {ev.title}
                         </span>
                         {ev.id && (
-                          <button onClick={() => deleteAgendaEvent(ev.id!)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
+                          <button onClick={() => ev.isMasterTask ? deleteMasterTask(ev.id!) : deleteAgendaEvent(ev.id!)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
                             <Trash2 size={10} color="var(--color-error)" />
                           </button>
                         )}
