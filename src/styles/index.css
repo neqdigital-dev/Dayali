@@ -1516,3 +1516,29 @@ body {
 .animate-water-ripple {
   animation: water-ripple 500ms ease;
 }
+
+.water-tracker-list {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-2);
+}
+
+@media (max-width: 768px) {
+  .water-tracker-list {
+    flex-direction: column;
+  }
+}
+
+
+.water-tracker-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+@media (max-width: 768px) {
+  .water-tracker-list {
+    flex-direction: column !important;
+  }
+}
+
