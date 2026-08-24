@@ -205,7 +205,7 @@ export default function Dashboard() {
             <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--weight-bold)', color: 'var(--color-primary)' }}>{Math.round(overallProgress)}%</span>
           </div>
           <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${overallProgress}%`, background: 'var(--color-primary)' }} />
+            <div className="progress-bar-fill" style={{ width: `${overallProgress}%`, background: 'var(--color-primary)' }} />
           </div>
         </div>
       </div>

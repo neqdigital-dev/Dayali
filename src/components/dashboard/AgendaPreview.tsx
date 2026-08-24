@@ -143,14 +143,14 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
         {days.map(day => {
           const events = getEventsForDay(day.toString());
           return (
-            <div key={day} className="custom-scrollbar" onClick={() => events.length > 0 && setViewingDayEvents({ day, events })} style={{ 
+            <div key={day} className="custom-scrollbar" onClick={() => events.length > 0 ? setViewingDayEvents({ day, events }) : (setAddingEventToDay(day), setNewEventTitle(''), setNewEventCategory('personal'))} style={{ 
               background: 'var(--color-bg-base)', 
               height: '110px', 
               padding: 'var(--space-2)',
               position: 'relative',
               overflowY: 'auto',
               overflowX: 'hidden',
-              cursor: events.length > 0 ? 'pointer' : 'default'
+              cursor: 'pointer'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span style={{ 
@@ -220,14 +220,14 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
             const events = isCurrentMonth ? getEventsForDay(dayNum.toString()) : [];
             
             return (
-              <div key={i} className="custom-scrollbar" onClick={() => events.length > 0 && setViewingDayEvents({ day: dayNum, events })} style={{ 
+              <div key={i} className="custom-scrollbar" onClick={() => events.length > 0 ? setViewingDayEvents({ day: dayNum, events }) : (setAddingEventToDay(dayNum), setNewEventTitle(''), setNewEventCategory('personal'))} style={{ 
                 background: 'var(--color-bg-base)', 
                 height: '150px', 
                 padding: 'var(--space-2)',
                 position: 'relative',
                 overflowY: 'auto',
                 overflowX: 'hidden',
-                cursor: events.length > 0 ? 'pointer' : 'default'
+                cursor: 'pointer'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-tertiary)' }}>{WEEKDAYS[i]}</span>
@@ -328,6 +328,14 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
             }) : (
               <p style={{ textAlign: 'center', color: 'var(--color-text-tertiary)', padding: 'var(--space-4)' }}>Nenhum evento neste dia.</p>
             )}
+            
+            <button 
+              className="btn btn-outline" 
+              style={{ marginTop: 'var(--space-2)', width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
+              onClick={() => { setAddingEventToDay(viewingDayEvents.day); setViewingDayEvents(null); setNewEventTitle(''); setNewEventCategory('personal'); }}
+            >
+              <Plus size={16} /> Adicionar Evento
+            </button>
           </div>
         </Modal>
       )}
