@@ -18,12 +18,10 @@ export default function ProgressCard({ completed, total }: ProgressCardProps) {
       </div>
 
       <div className="progress-bar">
-        <motion.div
+        <div
           className="progress-bar-fill"
-          initial={{ width: 0 }}
-          animate={{ width: `${percentage}%` }}
-          transition={{ duration: 0.8, ease: [0.34, 1.56, 0.64, 1] }}
           style={{
+            width: `${percentage}%`,
             background:
               percentage >= 80
                 ? 'var(--color-success)'

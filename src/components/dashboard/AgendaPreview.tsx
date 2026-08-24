@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Calendar as CalendarIcon, ChevronRight, Plus, ChevronLeft, Trash2, Check } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronRight, Plus, ChevronLeft, Trash2, Check, X } from 'lucide-react';
 import { useDataStore } from '../../stores/useDataStore';
+import Modal from '../ui/Modal';
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
@@ -13,6 +14,7 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
   const [view, setView] = useState<'month' | 'week' | 'list'>('month');
   
   const [addingEventToDay, setAddingEventToDay] = useState<number | null>(null);
+  const [viewingDayEvents, setViewingDayEvents] = useState<{ day: number, events: any[] } | null>(null);
   const [newEventTitle, setNewEventTitle] = useState('');
   const [newEventCategory, setNewEventCategory] = useState('personal');
 
@@ -141,13 +143,14 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
         {days.map(day => {
           const events = getEventsForDay(day.toString());
           return (
-            <div key={day} className="custom-scrollbar" style={{ 
+            <div key={day} className="custom-scrollbar" onClick={() => events.length > 0 && setViewingDayEvents({ day, events })} style={{ 
               background: 'var(--color-bg-base)', 
               height: '110px', 
               padding: 'var(--space-2)',
               position: 'relative',
               overflowY: 'auto',
-              overflowX: 'hidden'
+              overflowX: 'hidden',
+              cursor: events.length > 0 ? 'pointer' : 'default'
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span style={{ 
@@ -158,7 +161,7 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
                   {day === 1 ? '1 de ' + monthNames[month].substring(0, 3).toLowerCase() + '.' : day}
                 </span>
                 <button 
-                  onClick={() => { setAddingEventToDay(day); setNewEventTitle(''); setNewEventCategory('personal'); }}
+                  onClick={(e) => { e.stopPropagation(); setAddingEventToDay(day); setNewEventTitle(''); setNewEventCategory('personal'); }}
                   style={{ background: 'transparent', border: 'none', cursor: 'pointer', opacity: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 >
                   <Plus size={12} />
@@ -188,16 +191,16 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
                       opacity: ev.completed ? 0.6 : 1
                     }}>
                       <div 
-                        onClick={() => ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!)}
+                        onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!); }}
                         style={{ cursor: 'pointer', flexShrink: 0, marginRight: '4px', width: '10px', height: '10px', borderRadius: '2px', border: `1px solid ${borderCol}`, background: ev.completed ? borderCol : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                       >
                          {ev.completed && <Check size={8} color="white" />}
                       </div>
-                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textDecoration: ev.completed ? 'line-through' : 'none', cursor: 'pointer' }} title={ev.title} onClick={() => ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!)}>
+                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textDecoration: ev.completed ? 'line-through' : 'none', cursor: 'pointer' }} title={ev.title} onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!); }}>
                         {ev.title}
                       </span>
                       {ev.id && (
-                        <button onClick={() => ev.isMasterTask ? deleteMasterTask(ev.id!) : deleteAgendaEvent(ev.id!)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
+                        <button onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? deleteMasterTask(ev.id!) : deleteAgendaEvent(ev.id!); }} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
                           <Trash2 size={10} color="var(--color-error)" />
                         </button>
                       )}
@@ -258,20 +261,21 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
             const events = isCurrentMonth ? getEventsForDay(dayNum.toString()) : [];
             
             return (
-              <div key={i} className="custom-scrollbar" style={{ 
+              <div key={i} className="custom-scrollbar" onClick={() => events.length > 0 && setViewingDayEvents({ day: dayNum, events })} style={{ 
                 background: 'var(--color-bg-base)', 
                 height: '150px', 
                 padding: 'var(--space-2)',
                 position: 'relative',
                 overflowY: 'auto',
-                overflowX: 'hidden'
+                overflowX: 'hidden',
+                cursor: events.length > 0 ? 'pointer' : 'default'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <span style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-tertiary)' }}>{WEEKDAYS[i]}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ fontSize: 'var(--text-sm)', opacity: isCurrentMonth ? 0.8 : 0.4 }}>{dayNum}</span>
                     <button 
-                      onClick={() => { setAddingEventToDay(dayNum); setNewEventTitle(''); setNewEventCategory('personal'); }}
+                      onClick={(e) => { e.stopPropagation(); setAddingEventToDay(dayNum); setNewEventTitle(''); setNewEventCategory('personal'); }}
                       style={{ background: 'transparent', border: 'none', cursor: 'pointer', opacity: 0.5, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                     >
                       <Plus size={12} />
@@ -302,16 +306,16 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
                         opacity: ev.completed ? 0.6 : 1
                       }}>
                         <div 
-                          onClick={() => ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!)}
+                          onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!); }}
                           style={{ cursor: 'pointer', flexShrink: 0, marginRight: '4px', width: '10px', height: '10px', borderRadius: '2px', border: `1px solid ${borderCol}`, background: ev.completed ? borderCol : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                         >
                            {ev.completed && <Check size={8} color="white" />}
                         </div>
-                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textDecoration: ev.completed ? 'line-through' : 'none', cursor: 'pointer' }} title={ev.title} onClick={() => ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!)}>
+                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textDecoration: ev.completed ? 'line-through' : 'none', cursor: 'pointer' }} title={ev.title} onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!); }}>
                           {ev.title}
                         </span>
                         {ev.id && (
-                          <button onClick={() => ev.isMasterTask ? deleteMasterTask(ev.id!) : deleteAgendaEvent(ev.id!)} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
+                          <button onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? deleteMasterTask(ev.id!) : deleteAgendaEvent(ev.id!); }} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
                             <Trash2 size={10} color="var(--color-error)" />
                           </button>
                         )}
@@ -360,6 +364,54 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
         <div style={{ padding: 'var(--space-4)', textAlign: 'center', color: 'var(--color-text-tertiary)', background: 'var(--color-bg-subtle)', borderRadius: 'var(--radius-md)' }}>
           Visualização em Lista em construção...
         </div>
+      )}
+
+      {viewingDayEvents && (
+        <Modal 
+          isOpen={true} 
+          onClose={() => setViewingDayEvents(null)} 
+          title={`${viewingDayEvents.day} de ${monthNames[month]}`}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+            {viewingDayEvents.events.length > 0 ? viewingDayEvents.events.map((ev: any, i: number) => {
+              let bgCol = 'var(--color-primary-ghost)';
+              let borderCol = 'var(--color-primary)';
+              if (ev.type === 'college') { bgCol = 'var(--color-college-bg, hsla(152, 55%, 42%, 0.1))'; borderCol = 'var(--color-college, hsl(152, 55%, 42%))'; }
+              if (ev.type === 'work') { bgCol = 'var(--color-work-bg, hsla(200, 70%, 50%, 0.1))'; borderCol = 'var(--color-work, hsl(200, 70%, 50%))'; }
+              if (ev.type === 'personal' || ev.type === 'church') { bgCol = 'var(--color-warning-bg, hsla(38, 80%, 52%, 0.1))'; borderCol = 'var(--color-warning, hsl(38, 80%, 52%))'; }
+
+              return (
+                <div key={i} style={{
+                  padding: 'var(--space-2)',
+                  background: bgCol,
+                  borderLeft: `3px solid ${borderCol}`,
+                  borderRadius: 'var(--radius-md)',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  opacity: ev.completed ? 0.6 : 1
+                }}>
+                  <div 
+                    onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!); setViewingDayEvents({ ...viewingDayEvents, events: viewingDayEvents.events.map(e => e.id === ev.id ? { ...e, completed: !e.completed } : e) }); }}
+                    style={{ cursor: 'pointer', flexShrink: 0, marginRight: 'var(--space-3)', width: '18px', height: '18px', borderRadius: '4px', border: `2px solid ${borderCol}`, background: ev.completed ? borderCol : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                  >
+                     {ev.completed && <Check size={12} color="white" />}
+                  </div>
+                  <span style={{ flex: 1, fontSize: 'var(--text-base)', textDecoration: ev.completed ? 'line-through' : 'none', cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!); setViewingDayEvents({ ...viewingDayEvents, events: viewingDayEvents.events.map(e => e.id === ev.id ? { ...e, completed: !e.completed } : e) }); }}>
+                    {ev.title}
+                  </span>
+                  {ev.id && (
+                    <button onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? deleteMasterTask(ev.id!) : deleteAgendaEvent(ev.id!); setViewingDayEvents({ ...viewingDayEvents, events: viewingDayEvents.events.filter(e => e.id !== ev.id) }); }} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: 'var(--space-2)' }}>
+                      <Trash2 size={16} color="var(--color-error)" />
+                    </button>
+                  )}
+                </div>
+              );
+            }) : (
+              <p style={{ textAlign: 'center', color: 'var(--color-text-tertiary)', padding: 'var(--space-4)' }}>Nenhum evento neste dia.</p>
+            )}
+          </div>
+        </Modal>
       )}
     </div>
   );

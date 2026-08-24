@@ -37,7 +37,7 @@ export default function WaterTracker() {
         </div>
       </div>
 
-      <div className="task-column-list" style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+      <div className="task-column-list" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
         {WATER_STEPS.map((step) => {
           const isChecked = waterSteps[step.id];
           return (
