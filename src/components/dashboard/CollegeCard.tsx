@@ -103,10 +103,19 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
           <p className="text-sm text-tertiary" style={{ padding: 'var(--space-2)' }}>{t('empty.events', { ns: 'common', defaultValue: 'Nenhuma prova pendente.' })}</p>
         )}
 
-        {visibleEvents.map(event => (
+        {visibleEvents.map(event => {
+          const days = getDaysUntil(event.date);
+          let bg = 'var(--color-bg-subtle)';
+          let border = '1px solid transparent';
+          
+          if (days <= 0) { bg = 'rgba(239, 68, 68, 0.15)'; border = '1px solid rgba(239, 68, 68, 0.3)'; }
+          else if (days === 1) { bg = 'rgba(249, 115, 22, 0.15)'; border = '1px solid rgba(249, 115, 22, 0.3)'; }
+          else if (days >= 2 && days <= 4) { bg = 'rgba(234, 179, 8, 0.15)'; border = '1px solid rgba(234, 179, 8, 0.3)'; }
+
+          return (
           <div key={event.id} style={{ marginBottom: 'var(--space-2)' }}>
             {/* Event Header styling like a Task */}
-            <div className="task-item" style={{ background: 'var(--color-bg-subtle)' }}>
+            <div className="task-item" style={{ background: bg, border }}>
               <div 
                 className="task-content" 
                 style={{ flex: 1, cursor: 'pointer' }}
@@ -172,7 +181,7 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
               )}
             </div>
           </div>
-        ))}
+        )})}
         
         {hiddenCount > 0 && (
           <button 
