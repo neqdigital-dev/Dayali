@@ -11,6 +11,7 @@ import Church from './pages/Church';
 import History from './pages/History';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
+import CacheBuster from './components/CacheBuster';
 import { useAuthStore } from './stores/useAuthStore';
 import { useDataStore } from './stores/useDataStore';
 
@@ -29,8 +30,18 @@ function App() {
     }
   }, [user]);
 
+  if (!initialized) {
+    return (
+      <div className="flex-center" style={{ height: '100vh' }}>
+        <CacheBuster />
+        <div className="spinner" />
+      </div>
+    );
+  }
+
   return (
     <>
+      <CacheBuster />
       <ToastContainer />
       <Routes>
         <Route path="/login" element={<Login />} />
