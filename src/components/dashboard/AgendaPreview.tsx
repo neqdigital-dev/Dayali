@@ -184,60 +184,19 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
                       borderLeft: `2px solid ${borderCol}`,
                       borderRadius: '2px',
                       display: 'flex',
-                      justifyContent: 'space-between',
                       alignItems: 'center',
                       maxWidth: '100%',
                       overflow: 'hidden',
                       opacity: ev.completed ? 0.6 : 1
                     }}>
-                      <div 
-                        onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!); }}
-                        style={{ cursor: 'pointer', flexShrink: 0, marginRight: '4px', width: '10px', height: '10px', borderRadius: '2px', border: `1px solid ${borderCol}`, background: ev.completed ? borderCol : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      >
-                         {ev.completed && <Check size={8} color="white" />}
-                      </div>
-                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textDecoration: ev.completed ? 'line-through' : 'none', cursor: 'pointer' }} title={ev.title} onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!); }}>
+                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textDecoration: ev.completed ? 'line-through' : 'none' }} title={ev.title}>
                         {ev.title}
                       </span>
-                      {ev.id && (
-                        <button onClick={(e) => { e.stopPropagation(); if(window.confirm('Tem certeza que deseja excluir?')) { ev.isMasterTask ? deleteMasterTask(ev.id!) : deleteAgendaEvent(ev.id!); } }} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
-                          <Trash2 size={10} color="var(--color-error)" />
-                        </button>
-                      )}
                     </div>
                   );
                 })}
                 
-                {addingEventToDay === day && (
-                  <div style={{ marginTop: '2px', display: 'flex', flexDirection: 'column', gap: '2px' }} onClick={e => e.stopPropagation()}>
-                    <input
-                      autoFocus
-                      type="text"
-                      value={newEventTitle}
-                      onChange={e => setNewEventTitle(e.target.value)}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') handleDayAddSubmit(day);
-                        if (e.key === 'Escape') setAddingEventToDay(null);
-                      }}
-                      placeholder="Título..."
-                      style={{ width: '100%', fontSize: '0.65rem', padding: '2px', outline: 'none', border: '1px solid var(--color-border)', borderRadius: '2px', color: 'var(--color-text-primary)', background: 'var(--color-bg-base)' }}
-                    />
-                    <select
-                      value={newEventCategory}
-                      onChange={e => setNewEventCategory(e.target.value)}
-                      style={{ width: '100%', fontSize: '0.65rem', padding: '2px', outline: 'none', border: '1px solid var(--color-border)', borderRadius: '2px', color: 'var(--color-text-primary)', background: 'var(--color-bg-base)' }}
-                    >
-                      <option value="personal">Pessoal</option>
-                      <option value="work">Trabalho</option>
-                      <option value="college">Faculdade</option>
-                      <option value="church">Igreja</option>
-                    </select>
-                    <div style={{ display: 'flex', gap: '2px' }}>
-                      <button style={{ flex: 1, fontSize: '0.6rem', padding: '2px', background: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }} onClick={() => handleDayAddSubmit(day)}>OK</button>
-                      <button style={{ flex: 1, fontSize: '0.6rem', padding: '2px', background: 'var(--color-bg-subtle)', color: 'var(--color-text-secondary)', border: 'none', borderRadius: '2px', cursor: 'pointer' }} onClick={() => setAddingEventToDay(null)}>X</button>
-                    </div>
-                  </div>
-                )}
+
               </div>
             </div>
           );
@@ -299,60 +258,19 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
                         borderLeft: `2px solid ${borderCol}`,
                         borderRadius: '2px',
                         display: 'flex',
-                        justifyContent: 'space-between',
                         alignItems: 'center',
                         maxWidth: '100%',
                         overflow: 'hidden',
                         opacity: ev.completed ? 0.6 : 1
                       }}>
-                        <div 
-                          onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!); }}
-                          style={{ cursor: 'pointer', flexShrink: 0, marginRight: '4px', width: '10px', height: '10px', borderRadius: '2px', border: `1px solid ${borderCol}`, background: ev.completed ? borderCol : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        >
-                           {ev.completed && <Check size={8} color="white" />}
-                        </div>
-                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textDecoration: ev.completed ? 'line-through' : 'none', cursor: 'pointer' }} title={ev.title} onClick={(e) => { e.stopPropagation(); ev.isMasterTask ? toggleMasterTask(ev.id!) : toggleAgendaEvent(ev.id!); }}>
+                        <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, textDecoration: ev.completed ? 'line-through' : 'none' }} title={ev.title}>
                           {ev.title}
                         </span>
-                        {ev.id && (
-                          <button onClick={(e) => { e.stopPropagation(); if(window.confirm('Tem certeza que deseja excluir?')) { ev.isMasterTask ? deleteMasterTask(ev.id!) : deleteAgendaEvent(ev.id!); } }} style={{ background: 'none', border: 'none', cursor: 'pointer', opacity: 0.5, flexShrink: 0, marginLeft: '4px' }}>
-                            <Trash2 size={10} color="var(--color-error)" />
-                          </button>
-                        )}
                       </div>
                     );
                   })}
                   
-                  {addingEventToDay === dayNum && isCurrentMonth && (
-                    <div style={{ marginTop: '2px', display: 'flex', flexDirection: 'column', gap: '2px' }} onClick={e => e.stopPropagation()}>
-                      <input
-                        autoFocus
-                        type="text"
-                        value={newEventTitle}
-                        onChange={e => setNewEventTitle(e.target.value)}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') handleDayAddSubmit(dayNum);
-                          if (e.key === 'Escape') setAddingEventToDay(null);
-                        }}
-                        placeholder="Título..."
-                        style={{ width: '100%', fontSize: '0.65rem', padding: '2px', outline: 'none', border: '1px solid var(--color-border)', borderRadius: '2px', color: 'var(--color-text-primary)', background: 'var(--color-bg-base)' }}
-                      />
-                      <select
-                        value={newEventCategory}
-                        onChange={e => setNewEventCategory(e.target.value)}
-                        style={{ width: '100%', fontSize: '0.65rem', padding: '2px', outline: 'none', border: '1px solid var(--color-border)', borderRadius: '2px', color: 'var(--color-text-primary)', background: 'var(--color-bg-base)' }}
-                      >
-                        <option value="personal">Pessoal</option>
-                        <option value="work">Trabalho</option>
-                        <option value="college">Faculdade</option>
-                        <option value="church">Igreja</option>
-                      </select>
-                      <div style={{ display: 'flex', gap: '2px' }}>
-                        <button style={{ flex: 1, fontSize: '0.6rem', padding: '2px', background: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '2px', cursor: 'pointer' }} onClick={() => handleDayAddSubmit(dayNum)}>OK</button>
-                        <button style={{ flex: 1, fontSize: '0.6rem', padding: '2px', background: 'var(--color-bg-subtle)', color: 'var(--color-text-secondary)', border: 'none', borderRadius: '2px', cursor: 'pointer' }} onClick={() => setAddingEventToDay(null)}>X</button>
-                      </div>
-                    </div>
-                  )}
+
                 </div>
               </div>
             );
@@ -410,6 +328,48 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
             }) : (
               <p style={{ textAlign: 'center', color: 'var(--color-text-tertiary)', padding: 'var(--space-4)' }}>Nenhum evento neste dia.</p>
             )}
+          </div>
+        </Modal>
+      )}
+
+      {addingEventToDay !== null && (
+        <Modal 
+          isOpen={true} 
+          onClose={() => setAddingEventToDay(null)} 
+          title={`Adicionar Evento - ${addingEventToDay} de ${monthNames[month]}`}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+              <label style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>Título</label>
+              <input
+                autoFocus
+                type="text"
+                value={newEventTitle}
+                onChange={e => setNewEventTitle(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') handleDayAddSubmit(addingEventToDay);
+                }}
+                placeholder="Título do evento..."
+                style={{ width: '100%', fontSize: 'var(--text-base)', padding: 'var(--space-2)', outline: 'none', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text-primary)', background: 'var(--color-bg-base)' }}
+              />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
+              <label style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>Categoria</label>
+              <select
+                value={newEventCategory}
+                onChange={e => setNewEventCategory(e.target.value)}
+                style={{ width: '100%', fontSize: 'var(--text-base)', padding: 'var(--space-2)', outline: 'none', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text-primary)', background: 'var(--color-bg-base)' }}
+              >
+                <option value="personal">Pessoal</option>
+                <option value="work">Trabalho</option>
+                <option value="college">Faculdade</option>
+                <option value="church">Igreja</option>
+              </select>
+            </div>
+            <div style={{ display: 'flex', gap: 'var(--space-2)', marginTop: 'var(--space-2)' }}>
+              <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => handleDayAddSubmit(addingEventToDay)}>Salvar</button>
+              <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setAddingEventToDay(null)}>Cancelar</button>
+            </div>
           </div>
         </Modal>
       )}
