@@ -11,7 +11,7 @@ export default function ChurchCard({ dragHandleProps }: { dragHandleProps?: any 
   
   const { agendaEvents, addAgendaEvent, addSubtopic, toggleSubtopic, deleteSubtopic, deleteAgendaEvent } = useDataStore();
   
-  const churchEvents = agendaEvents.filter(e => e.category === 'church');
+  const churchEvents = agendaEvents.filter(e => e.category === 'church' && !e.completed);
   
   // Sorting and filtering
   const sortedEvents = [...churchEvents].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());

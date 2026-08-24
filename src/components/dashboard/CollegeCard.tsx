@@ -11,7 +11,7 @@ export default function CollegeCard({ dragHandleProps }: { dragHandleProps?: any
   
   const { agendaEvents, addAgendaEvent, addSubtopic, toggleSubtopic, deleteSubtopic, deleteAgendaEvent } = useDataStore();
   
-  const collegeEvents = agendaEvents.filter(e => e.category === 'college');
+  const collegeEvents = agendaEvents.filter(e => e.category === 'college' && !e.completed);
   
   // Sorting and filtering
   const sortedEvents = [...collegeEvents].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
