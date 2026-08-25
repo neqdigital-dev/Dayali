@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sparkles } from 'lucide-react';
 import { useDataStore } from '../../stores/useDataStore';
+import { getTodayISO } from '../../lib/dates';
 
 export default function SpiritualCard() {
   const { i18n } = useTranslation();
@@ -23,7 +24,7 @@ export default function SpiritualCard() {
     { textPt: '"Não fui eu que ordenei a você? Seja forte e corajoso! Não se apavore nem desanime, pois o Senhor, o seu Deus, estará com você por onde você andar."', refPt: 'Josué 1:9', textEn: '"Have I not commanded you? Be strong and courageous. Do not be frightened, and do not be dismayed, for the Lord your God is with you wherever you go."', refEn: 'Joshua 1:9' }
   ];
 
-  const lastResetDate = useDataStore((s) => s.lastResetDate) || new Date().toISOString().split('T')[0];
+  const lastResetDate = useDataStore((s) => s.lastResetDate) || getTodayISO();
   const todayDate = new Date(lastResetDate + 'T12:00:00'); // Use noon to avoid timezone issues
   const dayOfYear = Math.floor((todayDate.getTime() - new Date(todayDate.getFullYear(), 0, 0).getTime()) / 1000 / 60 / 60 / 24);
   const dailyVerse = verses[dayOfYear % verses.length];

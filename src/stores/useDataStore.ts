@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type { StateStorage } from 'zustand/middleware';
 import { supabase } from '../lib/supabase';
 import { useAuthStore } from './useAuthStore';
+import { getTodayISO } from '../lib/dates';
 
 export interface MasterTask {
   id: string;
@@ -169,7 +170,7 @@ export const useDataStore = create<DataState>()(
       ],
       reflectionText: '',
       reflectionTextEn: '',
-      lastResetDate: new Date().toISOString().split('T')[0],
+      lastResetDate: getTodayISO(),
       history: [],
 
       addMasterTask: (task) => {
@@ -301,7 +302,7 @@ export const useDataStore = create<DataState>()(
       setReflectionTextEn: (text) => set({ reflectionTextEn: text }),
       
       checkDailyReset: () => {
-        const today = new Date().toISOString().split('T')[0];
+        const today = getTodayISO();
         set((state) => {
           if (state.lastResetDate !== today) {
             // Calculate yesterday's completion before resetting
