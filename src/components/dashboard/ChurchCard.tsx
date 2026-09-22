@@ -72,7 +72,7 @@ export default function ChurchCard({ dragHandleProps }: { dragHandleProps?: any 
             </div>
           </div>
           <div style={{ height: 4, background: 'var(--color-bg-subtle)', borderRadius: 2, width: '100%', overflow: 'hidden' }}>
-            <div style={{ height: '100%', background: 'var(--color-preaching)', width: `${progress}%`, transition: 'width 0.3s ease' }} />
+            <div style={{ height: '100%', background: 'var(--color-church)', width: `${progress}%`, transition: 'width 0.3s ease' }} />
           </div>
         </div>
       </div>
@@ -155,7 +155,7 @@ export default function ChurchCard({ dragHandleProps }: { dragHandleProps?: any 
                     <span className="task-title" style={{ textDecoration: sub.completed ? 'line-through' : 'none' }}>{lang === 'en' && sub.title_en ? sub.title_en : sub.title_pt}</span>
                   </div>
                   <div className="task-actions" style={{ display: 'flex', gap: '8px' }}>
-                    <button className="btn-icon" onClick={() => deleteSubtopic(event.id, sub.id)} style={{ width: 28, height: 28 }}>
+                    <button className="btn-icon" onClick={() => { if(window.confirm('Tem certeza que deseja excluir este subtópico?')) deleteSubtopic(event.id, sub.id); }} style={{ width: 28, height: 28 }}>
                       <Trash2 size={16} color="var(--color-error)" />
                     </button>
                   </div>

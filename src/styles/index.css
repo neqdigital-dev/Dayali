@@ -102,9 +102,17 @@ ul, ol {
   --color-work-bg: hsl(200, 70%, 96%);
   --color-work-text: hsl(200, 70%, 30%);
 
-  --color-college: hsl(152, 55%, 42%);
-  --color-college-bg: hsl(152, 55%, 95%);
-  --color-college-text: hsl(152, 55%, 28%);
+  --color-college: hsl(210, 80%, 55%);
+  --color-college-bg: hsl(210, 80%, 95%);
+  --color-college-text: hsl(210, 80%, 28%);
+
+  --color-church: hsl(152, 55%, 42%);
+  --color-church-bg: hsl(152, 55%, 95%);
+  --color-church-text: hsl(152, 55%, 28%);
+
+  --color-private: hsl(38, 80%, 52%);
+  --color-private-bg: hsl(38, 80%, 94%);
+  --color-private-text: hsl(38, 80%, 28%);
 
   /* === Church Event Colors === */
   --color-preaching: hsl(220, 65%, 54%);
@@ -239,8 +247,12 @@ ul, ol {
   --color-personal-text: hsl(268, 55%, 72%);
   --color-work-bg: hsl(200, 40%, 14%);
   --color-work-text: hsl(200, 70%, 68%);
-  --color-college-bg: hsl(152, 35%, 13%);
-  --color-college-text: hsl(152, 55%, 62%);
+  --color-college-bg: hsl(210, 35%, 13%);
+  --color-college-text: hsl(210, 55%, 62%);
+  --color-church-bg: hsl(152, 35%, 13%);
+  --color-church-text: hsl(152, 55%, 62%);
+  --color-private-bg: hsl(38, 35%, 13%);
+  --color-private-text: hsl(38, 55%, 62%);
 
   --color-preaching-bg: hsl(220, 40%, 14%);
   --color-participation-bg: hsl(38, 40%, 14%);
@@ -507,7 +519,8 @@ body {
 .card-category.personal { border-top-color: var(--color-personal); }
 .card-category.work { border-top-color: var(--color-work); }
 .card-category.college { border-top-color: var(--color-college); }
-.card-category.church { border-top-color: var(--color-warning); }
+.card-category.church { border-top-color: var(--color-church); }
+.card-category.private { border-top-color: var(--color-private); }
 
 /* === Input === */
 .input {
@@ -655,6 +668,16 @@ body {
 .badge-college {
   background: var(--color-college-bg);
   color: var(--color-college-text);
+}
+
+.badge-church {
+  background: var(--color-church-bg);
+  color: var(--color-church-text);
+}
+
+.badge-private {
+  background: var(--color-private-bg);
+  color: var(--color-private-text);
 }
 
 .badge-preaching {

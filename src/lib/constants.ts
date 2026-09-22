@@ -1,6 +1,6 @@
 export const APP_NAME = 'Dayali';
 
-export const CATEGORIES = ['personal', 'work', 'college', 'church'] as const;
+export const CATEGORIES = ['personal', 'work', 'college', 'church', 'private'] as const;
 export type Category = (typeof CATEGORIES)[number];
 
 export const TASK_TYPES = ['daily', 'weekly', 'monthly', 'custom', 'one_time'] as const;
@@ -39,7 +39,8 @@ export const CATEGORY_COLORS: Record<Category, string> = {
   personal: 'var(--color-personal)',
   work: 'var(--color-work)',
   college: 'var(--color-college)',
-  church: 'var(--color-preaching)',
+  church: 'var(--color-church)',
+  private: 'var(--color-private)',
 };
 
 export const CHURCH_EVENT_TYPE_ICONS: Record<ChurchEventType, string> = {

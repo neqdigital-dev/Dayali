@@ -9,7 +9,7 @@ export interface MasterTask {
   id: string;
   title_pt: string;
   title_en?: string | null;
-  category: 'personal' | 'work' | 'college' | 'church';
+  category: 'personal' | 'work' | 'college' | 'church' | 'private';
   repeatType: 'weekday' | 'saturday' | 'sunday' | 'none';
   completed: boolean;
   time?: string;
@@ -59,6 +59,8 @@ interface DataState {
   setReflectionTextEn: (text: string) => void;
   checkDailyReset: () => void;
   forceSyncFromCloud: () => Promise<void>;
+  userId: string | null;
+  setUserId: (id: string | null) => void;
 }
 
 let cloudSyncReady = false;
@@ -66,13 +68,25 @@ let cloudSyncReady = false;
 const supabaseStorage: StateStorage = {
   getItem: async (name: string): Promise<string | null> => {
     // 1. Tenta recuperar do Local Storage primeiro (rápido e funciona offline)
-    const localData = localStorage.getItem(name);
+    let localData = localStorage.getItem(name);
     
     // 2. Verifica se o usuário está logado no Supabase
     const user = useAuthStore.getState().user;
     if (!user || user.id === 'mock-user-id') {
       cloudSyncReady = false;
       return localData;
+    }
+
+    // Proteção contra vazamento de estado entre contas (mesmo navegador)
+    if (localData) {
+      try {
+        const parsed = JSON.parse(localData);
+        const stateUserId = parsed?.state?.userId;
+        if (stateUserId && stateUserId !== user.id) {
+          console.warn("Estado local pertence a outro usuário. Ignorando...");
+          localData = null; // Ignora o estado local
+        }
+      } catch (e) {}
     }
 
     // 3. Busca o backup nas nuvens
@@ -85,11 +99,34 @@ const supabaseStorage: StateStorage = {
       
       cloudSyncReady = true;
       
-      const cloudBackup = data?.state_backup;
+      let cloudBackup = data?.state_backup;
+
+      // Tenta buscar eventos da igreja compartilhados
+      if (cloudBackup?.state?.agendaEvents) {
+        try {
+          const { data: sharedData } = await supabase.from('shared_state').select('state_backup').eq('id', 'church').single();
+          if (sharedData?.state_backup) {
+            const otherEvents = cloudBackup.state.agendaEvents.filter((e: any) => e.category !== 'church');
+            cloudBackup.state.agendaEvents = [...otherEvents, ...sharedData.state_backup];
+          }
+        } catch (e) {
+          console.warn("Shared state not available", e);
+        }
+      }
       
       if (localData) {
         try {
           const localParsed = JSON.parse(localData);
+          
+          // Garante que a coluna 'private' exista
+          if (localParsed?.state?.dashboardColumns) {
+            const allKeys = localParsed.state.dashboardColumns.flat();
+            if (!allKeys.includes('private')) {
+              localParsed.state.dashboardColumns.push(['private']);
+              localData = JSON.stringify(localParsed);
+            }
+          }
+
           const localTasks = localParsed?.state?.masterTasks?.length || 0;
           const cloudTasks = cloudBackup?.state?.masterTasks?.length || 0;
 
@@ -108,6 +145,14 @@ const supabaseStorage: StateStorage = {
          return localData;
       }
       
+      // Garante que a coluna 'private' exista também no cloudBackup antes de retornar
+      if (cloudBackup?.state?.dashboardColumns) {
+        const allKeys = cloudBackup.state.dashboardColumns.flat();
+        if (!allKeys.includes('private')) {
+          cloudBackup.state.dashboardColumns.push(['private']);
+        }
+      }
+
       return JSON.stringify(cloudBackup);
     } catch (e) {
       console.error("Erro ao buscar dados da nuvem", e);
@@ -128,6 +173,17 @@ const supabaseStorage: StateStorage = {
 
     try {
       const parsedValue = JSON.parse(value);
+      
+      try {
+        if (parsedValue?.state?.agendaEvents) {
+          const churchEvents = parsedValue.state.agendaEvents.filter((e: any) => e.category === 'church');
+          const { error: sharedError } = await supabase.from('shared_state').upsert({ id: 'church', state_backup: churchEvents });
+          if (sharedError) console.warn("Failed to save shared state", sharedError);
+        }
+      } catch (e) {
+        console.warn("Shared state table error", e);
+      }
+
       await supabase
         .from('profiles')
         .upsert({ id: user.id, state_backup: parsedValue });
@@ -166,12 +222,15 @@ export const useDataStore = create<DataState>()(
         ['personal'],
         ['work'],
         ['college'],
-        ['church']
+        ['church'],
+        ['private']
       ],
       reflectionText: '',
       reflectionTextEn: '',
       lastResetDate: getTodayISO(),
       history: [],
+      userId: null,
+      setUserId: (id) => set({ userId: id }),
 
       addMasterTask: (task) => {
         const id = Math.random().toString();
@@ -383,6 +442,24 @@ export const useDataStore = create<DataState>()(
 
           // Caso contrário, a nuvem está correta, então atualizamos a tela com os dados da nuvem
           if (cloudState) {
+            try {
+              const { data: sharedData } = await supabase.from('shared_state').select('state_backup').eq('id', 'church').single();
+              if (sharedData?.state_backup && cloudState.agendaEvents) {
+                const otherEvents = cloudState.agendaEvents.filter((e: any) => e.category !== 'church');
+                cloudState.agendaEvents = [...otherEvents, ...sharedData.state_backup];
+              }
+            } catch (e) {
+              console.warn("Shared state not available", e);
+            }
+
+            // Garante que a coluna 'private' exista se não estiver presente nos dados salvos
+            if (cloudState.dashboardColumns) {
+              const allKeys = cloudState.dashboardColumns.flat();
+              if (!allKeys.includes('private')) {
+                cloudState.dashboardColumns.push(['private']);
+              }
+            }
+
             set((state) => ({
                ...state,
                ...cloudState

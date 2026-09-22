@@ -2,6 +2,7 @@ import { DndContext, closestCenter, useSensor, useSensors, PointerSensor, type D
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { useDataStore } from '../stores/useDataStore';
+import { useAuthStore } from '../stores/useAuthStore';
 import SpiritualCard from '../components/dashboard/SpiritualCard';
 import WaterTracker from '../components/dashboard/WaterTracker';
 import TaskColumn from '../components/dashboard/TaskColumn';
@@ -133,14 +134,18 @@ export default function Dashboard() {
     .filter(t => t.category === 'work')
     .map(t => ({ id: t.id, title_pt: t.title_pt, title_en: t.title_en || t.title_pt, priority: 'normal' as const, completed: t.completed, time: t.time, date: t.date, notes: t.notes }));
 
-  const handleAddTask = (title: string, category: 'personal' | 'work', repeat: boolean = false) => {
+  const privateTasks = activeTasks
+    .filter(t => t.category === 'private')
+    .map(t => ({ id: t.id, title_pt: t.title_pt, title_en: t.title_en || t.title_pt, priority: 'normal' as const, completed: t.completed, time: t.time, date: t.date, notes: t.notes }));
+
+  const handleAddTask = (title: string, category: 'personal' | 'work' | 'private', repeat: boolean = false) => {
     addMasterTask({ title_pt: title, category, repeatType: repeat ? todayType : 'none' });
   };
 
   const toggleTask = (id: string) => toggleMasterTask(id);
   const handleDeleteTask = (id: string) => { if(window.confirm('Tem certeza que deseja excluir?')) deleteMasterTask(id); };
 
-  const allTasks = [...personalTasks, ...workTasks];
+  const allTasks = [...personalTasks, ...workTasks, ...privateTasks];
   const completedCount = allTasks.filter((t) => t.completed).length;
   
   const waterItems = Object.values(waterSteps || {});
@@ -180,22 +185,41 @@ export default function Dashboard() {
         />
       );
     }
+    if (id === 'private') {
+      return (
+        <TaskColumn 
+          dragHandleProps={dragProps}
+          category="private" 
+          tasks={privateTasks} 
+          onToggleTask={toggleTask}
+          onDeleteTask={handleDeleteTask}
+          onUpdateTask={updateMasterTask}
+          onAddSubmit={(title, repeat) => handleAddTask(title, 'private', repeat)}
+          onReorderTask={reorderMasterTasks}
+        />
+      );
+    }
     if (id === 'college') return <CollegeCard dragHandleProps={dragProps} />;
     if (id === 'church') return <ChurchCard dragHandleProps={dragProps} />;
     return null;
   };
 
+  const { user } = useAuthStore();
+  const isSecretary = user?.email === 'rafaelaoliveira010@gmail.com';
+
   return (
     <div className="dashboard-grid">
       {/* Spiritual Message */}
       <div className="dashboard-spiritual">
-        <SpiritualCard />
+        <SpiritualCard hideLesson={isSecretary} />
       </div>
 
       {/* Water Tracker */}
-      <div className="dashboard-water">
-        <WaterTracker />
-      </div>
+      {!isSecretary && (
+        <div className="dashboard-water">
+          <WaterTracker />
+        </div>
+      )}
 
       {/* Progress Section */}
       <div className="dashboard-progress" style={{ gridColumn: '1 / -1' }}>
@@ -233,7 +257,7 @@ export default function Dashboard() {
 
       {/* Agenda */}
       <div className="dashboard-agenda">
-        <AgendaPreview tasks={agendaEvents} />
+        <AgendaPreview tasks={isSecretary ? agendaEvents.filter(e => e.category === 'church') : agendaEvents} />
       </div>
     </div>
   );

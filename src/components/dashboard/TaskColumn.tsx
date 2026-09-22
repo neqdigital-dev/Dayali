@@ -35,6 +35,7 @@ const categoryConfig: Record<Category, { iconBg: string; label: string }> = {
   work: { iconBg: 'work', label: 'category.work' },
   college: { iconBg: 'college', label: 'category.college' },
   church: { iconBg: 'church', label: 'category.church' },
+  private: { iconBg: 'private', label: 'category.private' },
 };
 
 function SortableTask({ task, onToggleTask, onDeleteTask, onUpdateTask }: { task: TaskItem; onToggleTask?: (id: string, c: boolean) => void; onDeleteTask?: (id: string) => void; onUpdateTask?: (id: string, u: Partial<TaskItem>) => void }) {
@@ -342,9 +343,20 @@ export default function TaskColumn({ category, tasks: initialTasks, onToggleTask
         ) : (
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={tasks} strategy={verticalListSortingStrategy}>
-              {tasks.map((task) => (
-                <SortableTask key={task.id} task={task} onToggleTask={onToggleTask} onDeleteTask={onDeleteTask} onUpdateTask={onUpdateTask} />
-              ))}
+              {tasks.map((task) => {
+                const handleDelete = (id: string) => {
+                  if (category === 'church') {
+                    if (window.confirm(t('actions.confirm', { ns: 'common', defaultValue: 'Tem certeza?' }) + ' (Igreja)')) {
+                      onDeleteTask?.(id);
+                    }
+                  } else {
+                    onDeleteTask?.(id);
+                  }
+                };
+                return (
+                  <SortableTask key={task.id} task={task} onToggleTask={onToggleTask} onDeleteTask={handleDelete} onUpdateTask={onUpdateTask} />
+                );
+              })}
             </SortableContext>
           </DndContext>
         )}

@@ -60,10 +60,11 @@
     "high": "High"
   },
   "category": {
-    "personal": "Personal",
+    "personal": "Daily Activities",
     "work": "Work",
     "college": "College",
-    "church": "Personal & Church"
+    "church": "Church",
+    "private": "Personal"
   },
   "time": {
     "today": "Today",

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { useDataStore } from './useDataStore';
 
 interface AuthState {
   user: User | null;
@@ -21,14 +22,21 @@ export const useAuthStore = create<AuthState>((set) => ({
       if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
         console.warn('Mocking user since Supabase is not configured');
         set({ user: { id: 'mock-user-id', email: 'user@example.com' } as User, loading: false, initialized: true });
+        useDataStore.getState().setUserId('mock-user-id');
         return;
       }
       const { data: { session } } = await supabase.auth.getSession();
       set({ user: session?.user ?? null, loading: false, initialized: true });
+      if (session?.user) {
+         useDataStore.getState().setUserId(session.user.id);
+      }
 
       // Listen for auth changes
       supabase.auth.onAuthStateChange((_event, session) => {
         set({ user: session?.user ?? null });
+        if (session?.user) {
+           useDataStore.getState().setUserId(session.user.id);
+        }
       });
     } catch (error) {
       console.error('Failed to initialize auth', error);
@@ -42,6 +50,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         return;
     }
     await supabase.auth.signOut();
+    localStorage.removeItem('dayali-storage-v2');
     set({ user: null, loading: false });
   },
 }));

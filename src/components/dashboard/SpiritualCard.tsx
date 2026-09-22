@@ -4,7 +4,7 @@ import { Sparkles } from 'lucide-react';
 import { useDataStore } from '../../stores/useDataStore';
 import { getTodayISO } from '../../lib/dates';
 
-export default function SpiritualCard() {
+export default function SpiritualCard({ hideLesson = false }: { hideLesson?: boolean }) {
   const { i18n } = useTranslation();
   const isEn = i18n.language === 'en';
   const reflectionText = useDataStore((s) => s.reflectionText);
@@ -64,29 +64,31 @@ export default function SpiritualCard() {
       {/* Content */}
       <div className="spiritual-content" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
         
-        {/* Lesson Text */}
-        <div style={{ 
-          background: 'var(--color-bg-subtle)', 
-          padding: 'var(--space-4)', 
-          borderRadius: 'var(--radius-md)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 'var(--space-2)'
-        }}>
-          <p className="spiritual-verse" style={{ 
-            fontSize: '0.95rem', 
-            lineHeight: 1.6, 
-            fontStyle: 'italic', 
-            fontWeight: 'var(--weight-medium)' 
+        {/* Lesson Text (hidden for secretary) */}
+        {!hideLesson && (
+          <div style={{ 
+            background: 'var(--color-bg-subtle)', 
+            padding: 'var(--space-4)', 
+            borderRadius: 'var(--radius-md)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 'var(--space-2)'
           }}>
-            {verseText}
-          </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: 'var(--space-2)' }}>
-            <span className="spiritual-reference" style={{ fontSize: '0.75rem', opacity: 0.8, fontWeight: 'bold' }}>
-              {verseRef}
-            </span>
+            <p className="spiritual-verse" style={{ 
+              fontSize: '0.95rem', 
+              lineHeight: 1.6, 
+              fontStyle: 'italic', 
+              fontWeight: 'var(--weight-medium)' 
+            }}>
+              {verseText}
+            </p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: 'var(--space-2)' }}>
+              <span className="spiritual-reference" style={{ fontSize: '0.75rem', opacity: 0.8, fontWeight: 'bold' }}>
+                {verseRef}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Reflection */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
