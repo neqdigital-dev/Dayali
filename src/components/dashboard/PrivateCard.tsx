@@ -101,7 +101,7 @@ export default function PrivateCard({ dragHandleProps }: { dragHandleProps?: any
           </div>
         )}
 
-        {churchEvents.length === 0 && !isAddingEvent && (
+        {privateEvents.length === 0 && !isAddingEvent && (
           <p className="text-sm text-tertiary" style={{ padding: 'var(--space-2)' }}>{t('empty.events', { ns: 'common', defaultValue: 'Nenhum compromisso ou evento pendente.' })}</p>
         )}
 
