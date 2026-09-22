@@ -82,7 +82,12 @@ const supabaseStorage: StateStorage = {
       try {
         const parsed = JSON.parse(localData);
         const stateUserId = parsed?.state?.userId;
-        if (stateUserId && stateUserId !== user.id) {
+        const isSecretary = user.email === 'rafaelaoliveira010@gmail.com';
+        
+        // Se tem userId e é diferente, ignora. 
+        // Se NÃO tem userId (versão antiga), mas o usuário logado é a secretária, 
+        // sabemos que a secretária acabou de ser criada, então o cache local (sem ID) NÃO É DELA.
+        if ((stateUserId && stateUserId !== user.id) || (!stateUserId && isSecretary)) {
           console.warn("Estado local pertence a outro usuário. Ignorando...");
           localData = null; // Ignora o estado local
         }
