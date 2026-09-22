@@ -8,6 +8,7 @@ import WaterTracker from '../components/dashboard/WaterTracker';
 import TaskColumn from '../components/dashboard/TaskColumn';
 import CollegeCard from '../components/dashboard/CollegeCard';
 import ChurchCard from '../components/dashboard/ChurchCard';
+import PrivateCard from '../components/dashboard/PrivateCard';
 import AgendaPreview from '../components/dashboard/AgendaPreview';
 import { useTranslation } from 'react-i18next';
 import { useEffect } from 'react';
@@ -186,18 +187,7 @@ export default function Dashboard() {
       );
     }
     if (id === 'private') {
-      return (
-        <TaskColumn 
-          dragHandleProps={dragProps}
-          category="private" 
-          tasks={privateTasks} 
-          onToggleTask={toggleTask}
-          onDeleteTask={handleDeleteTask}
-          onUpdateTask={updateMasterTask}
-          onAddSubmit={(title, repeat) => handleAddTask(title, 'private', repeat)}
-          onReorderTask={reorderMasterTasks}
-        />
-      );
+      return <PrivateCard dragHandleProps={dragProps} />;
     }
     if (id === 'college') return <CollegeCard dragHandleProps={dragProps} />;
     if (id === 'church') return <ChurchCard dragHandleProps={dragProps} />;
