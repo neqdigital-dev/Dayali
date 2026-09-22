@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, Trash2, User, GripVertical } from 'lucide-react';
+import { Plus, Trash2, User, GripVertical, Heart } from 'lucide-react';
 import { getDaysUntil, getDaysUntilLabel } from '../../lib/dates';
 import { useDataStore, type AgendaEvent } from '../../stores/useDataStore';
 import EventModal from '../ui/EventModal';
