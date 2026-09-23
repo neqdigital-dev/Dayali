@@ -82,10 +82,12 @@ export default function SpiritualCard({ hideLesson = false }: { hideLesson?: boo
             }}>
               {verseText}
             </p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'var(--space-2)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: 'var(--space-2)' }}>
               <span className="spiritual-reference" style={{ fontSize: '0.75rem', opacity: 0.8, fontWeight: 'bold' }}>
                 {verseRef}
               </span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'var(--space-2)' }}>
               <a 
                 href="https://sabbath-school.adventech.io/pt?group=li%C3%A7%C3%A3o-jovens" 
                 target="_blank" 
