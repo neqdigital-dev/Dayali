@@ -106,17 +106,19 @@ const supabaseStorage: StateStorage = {
       
       let cloudBackup = data?.state_backup;
 
-      // Tenta buscar eventos da igreja compartilhados
-      if (cloudBackup?.state?.agendaEvents) {
-        try {
-          const { data: sharedData } = await supabase.from('shared_state').select('state_backup').eq('id', 'church').single();
-          if (sharedData?.state_backup) {
-            const otherEvents = cloudBackup.state.agendaEvents.filter((e: any) => e.category !== 'church');
-            cloudBackup.state.agendaEvents = [...otherEvents, ...sharedData.state_backup];
-          }
-        } catch (e) {
-          console.warn("Shared state not available", e);
+      // Sempre busca eventos da igreja do shared_state (compartilhado entre contas)
+      try {
+        const { data: sharedData } = await supabase.from('shared_state').select('state_backup').eq('id', 'church').single();
+        if (sharedData?.state_backup && Array.isArray(sharedData.state_backup) && sharedData.state_backup.length > 0) {
+          if (!cloudBackup) cloudBackup = { state: {} };
+          if (!cloudBackup.state) cloudBackup.state = {};
+          if (!cloudBackup.state.agendaEvents) cloudBackup.state.agendaEvents = [];
+          // Remove eventos de church antigos do perfil pessoal e injeta os do shared_state
+          const otherEvents = cloudBackup.state.agendaEvents.filter((e: any) => e.category !== 'church');
+          cloudBackup.state.agendaEvents = [...otherEvents, ...sharedData.state_backup];
         }
+      } catch (e) {
+        console.warn("Shared state not available", e);
       }
       
       if (localData) {
@@ -179,16 +181,22 @@ const supabaseStorage: StateStorage = {
     try {
       const parsedValue = JSON.parse(value);
       
+      // Separa eventos da igreja → shared_state (compartilhado)
       try {
         if (parsedValue?.state?.agendaEvents) {
           const churchEvents = parsedValue.state.agendaEvents.filter((e: any) => e.category === 'church');
-          const { error: sharedError } = await supabase.from('shared_state').upsert({ id: 'church', state_backup: churchEvents });
-          if (sharedError) console.warn("Failed to save shared state", sharedError);
+          if (churchEvents.length > 0) {
+            const { error: sharedError } = await supabase.from('shared_state').upsert({ id: 'church', state_backup: churchEvents });
+            if (sharedError) console.warn("Failed to save shared state", sharedError);
+          }
+          // Remove church do backup pessoal para evitar duplicação
+          parsedValue.state.agendaEvents = parsedValue.state.agendaEvents.filter((e: any) => e.category !== 'church');
         }
       } catch (e) {
         console.warn("Shared state table error", e);
       }
 
+      // Salva o restante (sem church) no perfil pessoal
       await supabase
         .from('profiles')
         .upsert({ id: user.id, state_backup: parsedValue });
