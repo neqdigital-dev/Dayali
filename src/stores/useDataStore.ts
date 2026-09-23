@@ -197,10 +197,9 @@ const supabaseStorage: StateStorage = {
       try {
         if (parsedValue?.state?.agendaEvents) {
           const churchEvents = parsedValue.state.agendaEvents.filter((e: any) => e.category === 'church');
-          if (churchEvents.length > 0) {
-            const { error: sharedError } = await supabase.from('shared_state').upsert({ id: 'church', state_backup: churchEvents });
-            if (sharedError) console.warn("Failed to save shared state", sharedError);
-          }
+          // Sempre salva no shared_state (mesmo vazio, para refletir deleções)
+          const { error: sharedError } = await supabase.from('shared_state').upsert({ id: 'church', state_backup: churchEvents });
+          if (sharedError) console.warn("Failed to save shared state", sharedError);
           // Remove church do backup pessoal para evitar duplicação
           parsedValue.state.agendaEvents = parsedValue.state.agendaEvents.filter((e: any) => e.category !== 'church');
         }
