@@ -52,5 +52,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     await supabase.auth.signOut();
     localStorage.removeItem('dayali-storage-v2');
     set({ user: null, loading: false });
+    window.location.href = '/login'; // Força o reload completo para limpar o Zustand da memória!
   },
 }));
