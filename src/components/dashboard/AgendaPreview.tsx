@@ -341,45 +341,43 @@ export default function AgendaPreview({ tasks: _tasks = [] }: { tasks?: any[] })
       )}
 
       {addingEventToDay !== null && (
-        <Modal 
-          isOpen={true} 
-          onClose={() => setAddingEventToDay(null)} 
-          title={`Adicionar Evento - ${addingEventToDay} de ${monthNames[month]}`}
-        >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-              <label style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>Título</label>
-              <input
-                autoFocus
-                type="text"
-                value={newEventTitle}
-                onChange={e => setNewEventTitle(e.target.value)}
-                onKeyDown={e => {
-                  if (e.key === 'Enter') handleDayAddSubmit(addingEventToDay);
-                }}
-                placeholder="Título do evento..."
-                style={{ width: '100%', fontSize: 'var(--text-base)', padding: 'var(--space-2)', outline: 'none', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text-primary)', background: 'var(--color-bg-base)' }}
-              />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-              <label style={{ fontSize: 'var(--text-sm)', color: 'var(--color-text-secondary)' }}>Categoria</label>
-              <select
-                value={newEventCategory}
-                onChange={e => setNewEventCategory(e.target.value)}
-                style={{ width: '100%', fontSize: 'var(--text-base)', padding: 'var(--space-2)', outline: 'none', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-md)', color: 'var(--color-text-primary)', background: 'var(--color-bg-base)' }}
-              >
-                <option value="personal">Pessoal</option>
-                <option value="work">Trabalho</option>
-                <option value="college">Faculdade</option>
-                <option value="church">Igreja</option>
-              </select>
-            </div>
-            <div style={{ display: 'flex', gap: 'var(--space-2)', marginTop: 'var(--space-2)' }}>
-              <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => handleDayAddSubmit(addingEventToDay)}>Salvar</button>
-              <button className="btn btn-ghost" style={{ flex: 1 }} onClick={() => setAddingEventToDay(null)}>Cancelar</button>
-            </div>
-          </div>
-        </Modal>
+        <EventModal
+          isOpen={true}
+          onClose={() => setAddingEventToDay(null)}
+          event={{
+            id: '',
+            title_pt: '',
+            date: new Date(year, month, addingEventToDay, 12).toISOString().split('T')[0],
+            category: 'personal', // Default
+            completed: false
+          } as any}
+          onSave={(updates) => {
+            const dateStr = updates.date || new Date(year, month, addingEventToDay, 12).toISOString().split('T')[0];
+            const category = updates.category || 'personal';
+            
+            if (category === 'personal' || category === 'work') {
+              addMasterTask({ 
+                title_pt: updates.title_pt || '', 
+                category: category as 'personal' | 'work', 
+                repeatType: 'none', 
+                date: dateStr, 
+                completed: false 
+              });
+            } else {
+              addAgendaEvent({ 
+                id: crypto.randomUUID(),
+                title_pt: updates.title_pt || '', 
+                category: category, 
+                date: dateStr, 
+                description: updates.description,
+                images: updates.images,
+                link: updates.link,
+                subtopics: [] 
+              });
+            }
+            setAddingEventToDay(null);
+          }}
+        />
       )}
     </div>
   );

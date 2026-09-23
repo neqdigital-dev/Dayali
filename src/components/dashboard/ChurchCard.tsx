@@ -18,24 +18,11 @@ export default function ChurchCard({ dragHandleProps }: { dragHandleProps?: any 
   const [visibleCount, setVisibleCount] = useState(4);
   const visibleEvents = sortedEvents.slice(0, visibleCount);
   const hiddenCount = sortedEvents.length - visibleEvents.length;
-
-  const [isAddingEvent, setIsAddingEvent] = useState(false);
-  const [newEventTitle, setNewEventTitle] = useState('');
-  const [newEventDate, setNewEventDate] = useState('');
   
   const [addingSubtopicTo, setAddingSubtopicTo] = useState<string | null>(null);
   const [newSubtopicTitle, setNewSubtopicTitle] = useState('');
   
   const [editingEvent, setEditingEvent] = useState<AgendaEvent | null>(null);
-
-  const handleAddEvent = () => {
-    if (newEventTitle.trim() && newEventDate) {
-      addAgendaEvent({ title_pt: newEventTitle.trim(), date: newEventDate, category: 'church', subtopics: [] });
-      setNewEventTitle('');
-      setNewEventDate('');
-      setIsAddingEvent(false);
-    }
-  };
 
   const handleAddSubtopic = (eventId: string) => {
     if (newSubtopicTitle.trim()) {
@@ -66,7 +53,7 @@ export default function ChurchCard({ dragHandleProps }: { dragHandleProps?: any 
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
               <span className="task-column-count text-sm text-tertiary">{completedCount}/{totalCount}</span>
-              <button className="btn-icon" title={t('actions.add', { ns: 'common' })} onClick={() => { setIsAddingEvent(true); setNewEventTitle(''); }}>
+              <button className="btn-icon" title={t('actions.add', { ns: 'common' })} onClick={() => setEditingEvent({ category: 'church' })}>
                 <Plus size={16} />
               </button>
             </div>
@@ -78,30 +65,9 @@ export default function ChurchCard({ dragHandleProps }: { dragHandleProps?: any 
       </div>
 
       <div className="college-sections">
-        {isAddingEvent && (
-          <div className="college-section" style={{ background: 'var(--color-bg-subtle)', padding: 'var(--space-2)', borderRadius: 'var(--radius-md)' }}>
-            <input
-              type="text"
-              autoFocus
-              value={newEventTitle}
-              onChange={(e) => setNewEventTitle(e.target.value)}
-              placeholder="Ex: Pregação Vila Tera"
-              style={{ width: '100%', marginBottom: '4px', fontSize: 'var(--text-sm)', padding: '4px', background: 'transparent', border: '1px solid var(--color-border)', borderRadius: '4px', color: 'var(--color-text-primary)' }}
-            />
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <input
-                type="date"
-                value={newEventDate}
-                onChange={(e) => setNewEventDate(e.target.value)}
-                style={{ flex: 1, fontSize: 'var(--text-sm)', padding: '4px', background: 'transparent', border: '1px solid var(--color-border)', borderRadius: '4px', color: 'var(--color-text-primary)' }}
-              />
-              <button className="btn btn-primary btn-sm" onClick={handleAddEvent}>Salvar</button>
-              <button className="btn btn-ghost btn-sm" onClick={() => setIsAddingEvent(false)}>Cancelar</button>
-            </div>
-          </div>
-        )}
 
-        {churchEvents.length === 0 && !isAddingEvent && (
+
+        {churchEvents.length === 0 && (
           <p className="text-sm text-tertiary" style={{ padding: 'var(--space-2)' }}>{t('empty.events', { ns: 'common', defaultValue: 'Nenhum compromisso ou evento pendente.' })}</p>
         )}
 
@@ -210,8 +176,20 @@ export default function ChurchCard({ dragHandleProps }: { dragHandleProps?: any 
         onClose={() => setEditingEvent(null)}
         event={editingEvent}
         onSave={(updates) => {
-          if (editingEvent) {
+          if (editingEvent?.id) {
             useDataStore.getState().updateAgendaEvent(editingEvent.id, updates);
+          } else {
+            useDataStore.getState().addAgendaEvent({
+              id: crypto.randomUUID(),
+              title_pt: updates.title_pt || '',
+              date: updates.date || new Date().toISOString().split('T')[0],
+              time: updates.time,
+              category: 'church',
+              description: updates.description,
+              images: updates.images,
+              link: updates.link,
+              subtopics: []
+            });
           }
         }}
       />

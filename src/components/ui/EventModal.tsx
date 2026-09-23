@@ -22,6 +22,7 @@ export default function EventModal({ isOpen, onClose, onSave, event }: EventModa
   const [description, setDescription] = useState('');
   const [link, setLink] = useState('');
   const [images, setImages] = useState<string[]>([]);
+  const [category, setCategory] = useState('personal');
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -34,13 +35,14 @@ export default function EventModal({ isOpen, onClose, onSave, event }: EventModa
       setDescription(event.description || event.notes || '');
       setLink(event.link || '');
       setImages(event.images || []);
+      setCategory(event.category || 'personal');
     }
   }, [isOpen, event]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) return;
-    onSave({ title_pt: title, date, time, description, link, images });
+    onSave({ title_pt: title, date, time, description, link, images, category });
     onClose();
   };
 
@@ -113,6 +115,31 @@ export default function EventModal({ isOpen, onClose, onSave, event }: EventModa
               outline: 'none',
             }}
           />
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+          <label style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--weight-medium)', color: 'var(--color-text-secondary)' }}>
+            Categoria
+          </label>
+          <select 
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            style={{
+              width: '100%',
+              padding: 'var(--space-3)',
+              borderRadius: 'var(--radius-md)',
+              border: '1px solid var(--color-border)',
+              background: 'var(--color-bg-base)',
+              color: 'var(--color-text-primary)',
+              fontSize: '1rem',
+              outline: 'none',
+            }}
+          >
+            <option value="personal">Pessoal</option>
+            <option value="work">Trabalho</option>
+            <option value="college">Faculdade</option>
+            <option value="church">Igreja / Moving</option>
+          </select>
         </div>
 
         <div style={{ display: 'flex', gap: 'var(--space-4)' }}>
