@@ -3,7 +3,7 @@ import Modal from './Modal';
 import { useTranslation } from 'react-i18next';
 import type { AgendaEvent } from '../../stores/useDataStore';
 import { supabase } from '../../lib/supabase';
-import { Image as ImageIcon, X, Loader2 } from 'lucide-react';
+import { Image as ImageIcon, X, Loader2, Download } from 'lucide-react';
 
 interface EventModalProps {
   isOpen: boolean;
@@ -24,6 +24,7 @@ export default function EventModal({ isOpen, onClose, onSave, event }: EventModa
   const [images, setImages] = useState<string[]>([]);
   const [category, setCategory] = useState('personal');
   const [uploading, setUploading] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Update local state when event changes
@@ -212,7 +213,7 @@ export default function EventModal({ isOpen, onClose, onSave, event }: EventModa
           {images.length > 0 && (
             <div style={{ display: 'flex', gap: 'var(--space-2)', overflowX: 'auto', paddingBottom: 'var(--space-2)' }}>
               {images.map((img, idx) => (
-                <div key={idx} style={{ position: 'relative', width: '80px', height: '80px', flexShrink: 0 }}>
+                <div key={idx} style={{ position: 'relative', width: '80px', height: '80px', flexShrink: 0, cursor: 'pointer' }} onClick={() => setPreviewImage(img)}>
                   <img 
                     src={img} 
                     alt="Event media" 
@@ -220,7 +221,7 @@ export default function EventModal({ isOpen, onClose, onSave, event }: EventModa
                   />
                   <button
                     type="button"
-                    onClick={() => removeImage(idx)}
+                    onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
                     style={{
                       position: 'absolute',
                       top: '-4px',
@@ -283,6 +284,47 @@ export default function EventModal({ isOpen, onClose, onSave, event }: EventModa
           </button>
         </div>
       </form>
+
+      {/* Image Preview Lightbox */}
+      {previewImage && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.85)',
+          zIndex: 100000,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 'var(--space-4)'
+        }} onClick={() => setPreviewImage(null)}>
+          <div style={{ position: 'absolute', top: 'var(--space-4)', right: 'var(--space-4)', display: 'flex', gap: 'var(--space-3)' }}>
+            <a 
+              href={previewImage} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              download 
+              onClick={(e) => e.stopPropagation()}
+              className="btn btn-primary"
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: 'var(--radius-md)', textDecoration: 'none', color: 'white' }}
+            >
+              <Download size={20} /> Baixar Imagem
+            </a>
+            <button 
+              onClick={(e) => { e.stopPropagation(); setPreviewImage(null); }}
+              style={{ background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', cursor: 'pointer' }}
+            >
+              <X size={24} />
+            </button>
+          </div>
+          <img 
+            src={previewImage} 
+            alt="Preview" 
+            style={{ maxWidth: '100%', maxHeight: '90vh', objectFit: 'contain', borderRadius: 'var(--radius-md)' }}
+            onClick={(e) => e.stopPropagation()} 
+          />
+        </div>
+      )}
     </Modal>
   );
 }
