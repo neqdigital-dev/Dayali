@@ -24,6 +24,8 @@ export interface AgendaEvent {
   date: string; // YYYY-MM-DD
   time?: string;
   notes?: string;
+  description?: string;
+  images?: string[];
   link?: string;
   category: string;
   completed?: boolean;
