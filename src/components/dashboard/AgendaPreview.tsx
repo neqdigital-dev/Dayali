@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Calendar as CalendarIcon, ChevronRight, Plus, ChevronLeft, Trash2, Check, X } from 'lucide-react';
 import { useDataStore } from '../../stores/useDataStore';
 import Modal from '../ui/Modal';
+import EventModal from '../ui/EventModal';
 
 const WEEKDAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
