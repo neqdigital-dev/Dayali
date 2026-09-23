@@ -13,7 +13,7 @@ export default function SpiritualCard({ hideLesson = false }: { hideLesson?: boo
   const setReflectionTextEn = useDataStore((s) => s.setReflectionTextEn);
   const [isTranslatingLocal, setIsTranslatingLocal] = useState(false);
 
-  const headerText = isEn ? "Youth Sabbath School Lesson" : "Lição da Escola Sabatina Jovem";
+  const headerText = isEn ? "Daily Meditation" : "Meditação Diária";
   const verses = [
     { textPt: '"Porque para mim tenho por certo que as aflições deste tempo presente não são para comparar com a glória que em nós há de ser revelada."', refPt: 'Romanos 8:18', textEn: '"For I consider that the sufferings of this present time are not worth comparing with the glory that is to be revealed to us."', refEn: 'Romans 8:18' },
     { textPt: '"Tudo posso naquele que me fortalece."', refPt: 'Filipenses 4:13', textEn: '"I can do all things through him who strengthens me."', refEn: 'Philippians 4:13' },
@@ -82,10 +82,19 @@ export default function SpiritualCard({ hideLesson = false }: { hideLesson?: boo
             }}>
               {verseText}
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', marginTop: 'var(--space-2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'var(--space-2)' }}>
               <span className="spiritual-reference" style={{ fontSize: '0.75rem', opacity: 0.8, fontWeight: 'bold' }}>
                 {verseRef}
               </span>
+              <a 
+                href="https://sabbath-school.adventech.io/pt?group=li%C3%A7%C3%A3o-jovens" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="btn btn-ghost btn-sm"
+                style={{ fontSize: '11px', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 8px' }}
+              >
+                📖 {isEn ? 'Read Sabbath School Lesson' : 'Ler Lição Completa'}
+              </a>
             </div>
           </div>
         )}
