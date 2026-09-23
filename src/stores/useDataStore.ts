@@ -107,19 +107,28 @@ const supabaseStorage: StateStorage = {
       let cloudBackup = data?.state_backup;
 
       // Sempre busca eventos da igreja do shared_state (compartilhado entre contas)
+      let sharedChurchEvents: any[] = [];
       try {
         const { data: sharedData } = await supabase.from('shared_state').select('state_backup').eq('id', 'church').single();
         if (sharedData?.state_backup && Array.isArray(sharedData.state_backup) && sharedData.state_backup.length > 0) {
-          if (!cloudBackup) cloudBackup = { state: {} };
-          if (!cloudBackup.state) cloudBackup.state = {};
-          if (!cloudBackup.state.agendaEvents) cloudBackup.state.agendaEvents = [];
-          // Remove eventos de church antigos do perfil pessoal e injeta os do shared_state
-          const otherEvents = cloudBackup.state.agendaEvents.filter((e: any) => e.category !== 'church');
-          cloudBackup.state.agendaEvents = [...otherEvents, ...sharedData.state_backup];
+          sharedChurchEvents = sharedData.state_backup;
         }
       } catch (e) {
         console.warn("Shared state not available", e);
       }
+
+      // Função helper: injeta eventos da igreja em qualquer resultado
+      const injectChurchEvents = (parsed: any) => {
+        if (!parsed) parsed = { state: {} };
+        if (!parsed.state) parsed.state = {};
+        if (!parsed.state.agendaEvents) parsed.state.agendaEvents = [];
+        // Remove church antigos e injeta os do shared_state
+        parsed.state.agendaEvents = [
+          ...parsed.state.agendaEvents.filter((e: any) => e.category !== 'church'),
+          ...sharedChurchEvents
+        ];
+        return parsed;
+      };
       
       if (localData) {
         try {
@@ -130,7 +139,6 @@ const supabaseStorage: StateStorage = {
             const allKeys = localParsed.state.dashboardColumns.flat();
             if (!allKeys.includes('private')) {
               localParsed.state.dashboardColumns.push(['private']);
-              localData = JSON.stringify(localParsed);
             }
           }
 
@@ -140,8 +148,10 @@ const supabaseStorage: StateStorage = {
           // Se o armazenamento local tiver mais tarefas que a nuvem (ex: nuvem foi apagada),
           // assumimos o local como mais atualizado e forçamos o envio para a nuvem.
           if (!cloudBackup || localTasks > cloudTasks) {
+            // Injeta eventos de church ANTES de retornar
+            const finalLocal = injectChurchEvents(localParsed);
             supabase.from('profiles').update({ state_backup: localParsed }).eq('id', user.id).then();
-            return localData;
+            return JSON.stringify(finalLocal);
           }
         } catch (e) {
           console.error("Erro ao comparar dados", e);
@@ -160,7 +170,9 @@ const supabaseStorage: StateStorage = {
         }
       }
 
-      return JSON.stringify(cloudBackup);
+      // Injeta eventos de church no cloudBackup
+      const finalCloud = injectChurchEvents(cloudBackup);
+      return JSON.stringify(finalCloud);
     } catch (e) {
       console.error("Erro ao buscar dados da nuvem", e);
       return localData;
